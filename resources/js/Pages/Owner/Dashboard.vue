@@ -325,7 +325,9 @@ const setQuickRange = (range) => {
                         <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ __('recent_activity') }}</h3>
                         <Link :href="route('owner.appointments.list')" class="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-white/5 text-[10px] font-black uppercase tracking-widest text-amber-500 hover:bg-amber-500 hover:text-white transition-all">{{ __('view_all') }}</Link>
                     </div>
-                    <table class="min-w-full divide-y divide-slate-100 dark:divide-white/5">
+                    
+                    <!-- Desktop Table -->
+                    <table class="hidden lg:table min-w-full divide-y divide-slate-100 dark:divide-white/5">
                         <thead class="bg-slate-50/50 dark:bg-black/20">
                             <tr>
                                 <th class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ __('customer') }}</th>
@@ -358,6 +360,32 @@ const setQuickRange = (range) => {
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- Mobile List -->
+                    <div class="lg:hidden divide-y divide-slate-100 dark:divide-white/5">
+                        <div v-for="appt in recentAppointments" :key="appt.id" class="p-6">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black">
+                                        {{ appt.barber?.name.charAt(0) }}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-black text-slate-900 dark:text-white">{{ appt.customer?.name || __('walk_in') }}</p>
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ appt.barber?.name }}</p>
+                                    </div>
+                                </div>
+                                <span :class="['px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border', appt.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20']">
+                                    {{ __(appt.status) }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center text-right">
+                                <div class="text-left">
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{{ appt.services_count }} services</p>
+                                </div>
+                                <span class="text-sm font-black text-slate-900 dark:text-white">{{ formatCurrency(appt.total_price) }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -46,6 +46,7 @@ Route::prefix('owner')->middleware(['auth', 'role:owner', 'shop.active'])->group
     
     // Calendar & Appointments
     Route::get('/calendar', [\App\Http\Controllers\Owner\AppointmentController::class, 'index'])->name('owner.calendar');
+    Route::get('/calendar/daily', [\App\Http\Controllers\Owner\AppointmentController::class, 'daily'])->name('owner.calendar.daily');
     Route::get('/appointments/list', [\App\Http\Controllers\Owner\AppointmentController::class, 'list'])->name('owner.appointments.list');
     Route::get('/appointments/events', [\App\Http\Controllers\Owner\AppointmentController::class, 'events'])->name('owner.appointments.events');
     Route::post('/appointments', [\App\Http\Controllers\Owner\AppointmentController::class, 'store'])->name('owner.appointments.store');

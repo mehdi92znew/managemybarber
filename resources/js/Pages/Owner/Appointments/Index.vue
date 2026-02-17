@@ -154,8 +154,9 @@ const getPaymentStatusClass = (status) => {
             </div>
 
             <!-- List -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2.5rem] overflow-hidden premium-shadow">
-                <table class="min-w-full divide-y divide-slate-100 dark:divide-white/5">
+            <div class="bg-transparent sm:bg-white dark:sm:bg-slate-900 border-none sm:border sm:border-slate-200 dark:sm:border-white/5 rounded-[2.5rem] overflow-hidden sm:premium-shadow">
+                <!-- Desktop Table -->
+                <table class="hidden lg:table min-w-full divide-y divide-slate-100 dark:divide-white/5">
                     <thead class="bg-slate-50/50 dark:bg-black/20">
                         <tr>
                             <th class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ __('date_time') }}</th>
@@ -208,19 +209,59 @@ const getPaymentStatusClass = (status) => {
                                 </button>
                             </td>
                         </tr>
-                        <tr v-if="appointments.data.length === 0">
-                            <td colspan="7" class="py-20 text-center">
-                                <div class="flex flex-col items-center">
-                                    <div class="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-slate-700 mb-4">
-                                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                    </div>
-                                    <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ __('no_appointments_found') }}</h3>
-                                    <p class="text-sm text-slate-500 font-medium mt-1">{{ __('try_different_filters') }}</p>
-                                </div>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
+
+                <!-- Mobile Card List -->
+                <div class="lg:hidden space-y-4">
+                    <div v-for="appt in appointments.data" :key="appt.id" class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200 dark:border-white/5 premium-shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs font-black">
+                                    {{ appt.barber?.name.charAt(0) }}
+                                </div>
+                                <div class="flex flex-col">
+                                    <h4 class="text-sm font-black text-slate-900 dark:text-white truncate max-w-[150px]">{{ appt.customer?.name || __('walk_in') }}</h4>
+                                    <p class="text-[10px] font-bold text-slate-400">{{ formatDateTime(appt.start_time) }}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end gap-2">
+                                <span :class="['px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border', getStatusClass(appt.status)]">
+                                    {{ __(appt.status) }}
+                                </span>
+                                <span :class="['px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border', getPaymentStatusClass(appt.payment_status)]">
+                                    {{ __(appt.payment_status) }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
+                            <div class="flex flex-col">
+                                <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{{ __('price') }}</p>
+                                <p class="text-sm font-black text-slate-900 dark:text-white">{{ formatCurrency(appt.total_price) }}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button 
+                                    @click="editAppointment(appt)"
+                                    class="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 hover:text-amber-500 transition-colors"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div v-if="appointments.data.length === 0" class="py-20 text-center bg-white dark:bg-slate-900 rounded-[2.5rem]">
+                    <div class="flex flex-col items-center">
+                        <div class="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 text-slate-300 dark:text-slate-700 mb-4">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ __('no_appointments_found') }}</h3>
+                        <p class="text-sm text-slate-500 font-medium mt-1">{{ __('try_different_filters') }}</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Pagination -->

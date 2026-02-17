@@ -11,7 +11,7 @@ import BookingModal from '@/Components/BookingModal.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { trans } from '@/lang';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     services: Array,
@@ -156,15 +156,45 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol' }).format(value);
 };
 
+const lastClickDate = ref(null);
+const lastClickTime = ref(0);
+
 const handleDateClick = (arg) => {
-    selectedDate.value = {
-        start: arg.dateStr,
-        allDay: arg.allDay
-    };
-    isBookingModalOpen.value = true;
+    if (isMobile.value) {
+        const now = Date.now();
+        const clickedTime = arg.date.getTime();
+        
+        if (lastClickDate.value === clickedTime && (now - lastClickTime.value) < 500) {
+            selectedDate.value = {
+                start: arg.dateStr,
+                allDay: arg.allDay
+            };
+            isBookingModalOpen.value = true;
+            lastClickDate.value = null;
+            lastClickTime.value = 0;
+        } else {
+            lastClickDate.value = clickedTime;
+            lastClickTime.value = now;
+            // Feedback for mobile users
+            const el = arg.dayEl;
+            el.classList.add('bg-indigo-500/10');
+            setTimeout(() => el.classList.remove('bg-indigo-500/10'), 500);
+        }
+    } else {
+        selectedDate.value = {
+            start: arg.dateStr,
+            allDay: arg.allDay
+        };
+        isBookingModalOpen.value = true;
+    }
 };
 
 const handleDateSelect = (selectInfo) => {
+    if (isMobile.value) {
+        // For mobile selection, we still allow it but maybe with a confirmation or just stick to dateClick
+        // Given the "double click" requirement, dateClick is more intuitive for single slots
+        return; 
+    }
     selectedDate.value = {
         start: selectInfo.startStr,
         end: selectInfo.endStr,
@@ -233,7 +263,7 @@ onMounted(() => {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     // Initialize currentView based on mobilty
-    currentView.value = isMobile.value ? 'listWeek' : 'timeGridWeek';
+    currentView.value = isMobile.value ? 'timeGridDay' : 'timeGridWeek';
 });
 
 const handleDatesSet = (dateInfo) => {
@@ -243,11 +273,11 @@ const handleDatesSet = (dateInfo) => {
 
 const calendarOptions = computed(() => ({
     plugins: [ dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin ],
-    initialView: isMobile.value ? 'listWeek' : 'timeGridWeek',
+    initialView: isMobile.value ? 'timeGridDay' : 'timeGridWeek',
     locale: getLocale() === 'ar' ? 'ar-dz' : getLocale(),
     headerToolbar: false,
     editable: true,
-    selectable: true,
+    selectable: !isMobile.value, // Disable drag selection on mobile to avoid conflicts with scrolling/double-tap
     selectMirror: true,
     dayMaxEvents: true,
     weekends: true,
@@ -356,9 +386,13 @@ defineExpose({ refreshCalendar });
 <template>
     <div class="space-y-4 sm:space-y-6">
         <!-- Premium Calendar Header / Toolbar -->
-        <div class="flex flex-col xl:flex-row gap-6 items-center justify-between p-8 rounded-[3rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 premium-shadow max-w-7xl mx-auto">
+        <div class="flex flex-col xl:flex-row gap-4 sm:gap-6 items-center justify-between p-4 sm:p-8 rounded-[2rem] sm:rounded-[3rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 premium-shadow max-w-7xl mx-auto">
             <!-- Left: View Controls -->
-            <div class="flex items-center gap-1 p-1 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 w-full xl:w-auto overflow-x-auto no-scrollbar">
+            <div class="flex items-center gap-1 p-1 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 w-full xl:w-auto overflow-x-auto no-scrollbar order-last xl:order-first">
+                <Link :href="route('owner.calendar.daily')" class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap text-amber-500 hover:bg-amber-500/10 mr-2 border border-amber-500/20">
+                    {{ __('daily_planning') }}
+                </Link>
+                <div class="h-6 w-px bg-slate-200 dark:bg-white/10 mx-2 hidden sm:block"></div>
                 <button @click="changeView('timeGridWeek')" class="flex-1 xl:flex-none px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap" :class="currentView === 'timeGridWeek' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-500 hover:text-indigo-600'">
                     {{ __('week') }}
                 </button>
@@ -371,15 +405,20 @@ defineExpose({ refreshCalendar });
             </div>
 
             <!-- Center: Navigation -->
-            <div class="flex items-center justify-between xl:justify-center gap-2 sm:gap-5 w-full xl:w-auto order-first xl:order-none">
+            <div class="flex items-center justify-between xl:justify-center gap-2 sm:gap-5 w-full xl:w-auto">
                 <button @click="goPrev" class="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-500 hover:text-indigo-600 transition-all shadow-sm active:scale-90">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" /></svg>
                 </button>
                 <div class="text-center min-w-[140px] sm:min-w-[200px]">
-                    <h3 class="text-sm sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ currentTitle }}</h3>
-                    <button @click="goToday" class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 hover:text-amber-600 transition-colors mt-0.5">
-                        {{ __('today') }}
-                    </button>
+                    <h3 class="text-xs sm:text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ currentTitle }}</h3>
+                    <div class="flex flex-col items-center">
+                        <button @click="goToday" class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 hover:text-amber-600 transition-colors mt-0.5">
+                            {{ __('today') }}
+                        </button>
+                        <span v-if="isMobile" class="text-[7px] font-bold uppercase tracking-tight text-slate-400 mt-1">
+                            Double clic pour réserver
+                        </span>
+                    </div>
                 </div>
                 <button @click="goNext" class="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-500 hover:text-indigo-600 transition-all shadow-sm active:scale-90">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>

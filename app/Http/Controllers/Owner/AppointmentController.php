@@ -25,6 +25,13 @@ class AppointmentController extends Controller
         return \Inertia\Inertia::render('Owner/Calendar', compact('barbers', 'services'));
     }
 
+    public function daily()
+    {
+        $barbers = User::where('shop_id', auth()->user()->shop_id)->where('role', 'barber')->get();
+        $services = Service::where('shop_id', auth()->user()->shop_id)->where('is_active', true)->get();
+        return \Inertia\Inertia::render('Owner/CalendarDaily', compact('barbers', 'services'));
+    }
+
     public function list(Request $request)
     {
         $query = Appointment::with(['customer', 'barber', 'services'])

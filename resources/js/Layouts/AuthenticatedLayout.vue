@@ -32,7 +32,7 @@ const navigation = computed(() => {
         links.push({ name: trans('dashboard', currentLocale.value), route: 'owner.dashboard', icon: 'HomeIcon' });
         links.push({ name: trans('appointments', currentLocale.value), route: 'owner.appointments.list', icon: 'CalendarIcon' });
         links.push({ name: trans('calendar', currentLocale.value), route: 'owner.calendar', icon: 'ClockIcon' });
-        // links.push({ name: trans('appointments', currentLocale.value), route: 'owner.appointments.events', icon: 'ClockIcon' }); // API route, removing for now
+        links.push({ name: trans('daily_planning', currentLocale.value), route: 'owner.calendar.daily', icon: 'ViewColumnsIcon' });
         links.push({ name: trans('customers', currentLocale.value), route: 'owner.customers.index', icon: 'UsersIcon' });
         links.push({ name: trans('services', currentLocale.value), route: 'owner.services.index', icon: 'ScissorsIcon' }); // Assuming Scissors
         links.push({ name: trans('bills', currentLocale.value), route: 'owner.bills.index', icon: 'BanknotesIcon' });
@@ -117,6 +117,7 @@ const isRouteActive = (routeName) => {
                                     <path v-else-if="item.icon === 'WalletIcon'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                     <path v-else-if="item.icon === 'ChartBarIcon'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     <path v-else-if="item.icon === 'ClockIcon'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <path v-else-if="item.icon === 'ViewColumnsIcon'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 10V7" />
                                     <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </div>
