@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+    }
+    
+    body {
+        @apply transition-colors duration-300;
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Outfit', sans-serif;
+    }
+}
+
+.font-outfit { font-family: 'Outfit', sans-serif; }
+.font-inter { font-family: 'Inter', sans-serif; }
+.font-cairo { font-family: 'Cairo', sans-serif; }
+
+.glass-card {
+    @apply bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl border border-slate-200/50 dark:border-white/5;
+}
+
+.premium-gradient {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.premium-shadow {
+    @apply shadow-[0_20px_50px_rgba(30,41,59,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)];
+}
+
+.btn-premium {
+    @apply relative overflow-hidden transition-all duration-300 active:scale-95;
+    box-shadow: 0 4px 14px 0 rgba(0,0,0,0.1);
+}
+
+.btn-premium:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+.fab-button {
+    @apply fixed bottom-8 right-6 z-50 h-14 w-14 rounded-2xl bg-amber-500 text-slate-900 shadow-2xl shadow-amber-500/40 flex items-center justify-center active:scale-90 transition-all border-4 border-white dark:border-slate-900;
+}
+
+.fab-button-ping {
+    @apply absolute -inset-1 rounded-2xl bg-amber-500 animate-ping opacity-20 pointer-events-none;
+}
+
+.premium-input {
+    @apply w-full bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/5 rounded-2xl px-4 py-3.5 text-slate-900 dark:text-white font-bold text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-amber-500 transition-colors;
+}
+
+[dir="rtl"] .fab-button {
+    right: auto;
+    left: 1.5rem;
+}
