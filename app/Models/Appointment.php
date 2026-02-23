@@ -64,4 +64,13 @@ class Appointment extends Model
     {
         return $this->hasOne(Payment::class);
     }
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     * Prevents Laravel from appending timezone offsets to start_time and end_time.
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

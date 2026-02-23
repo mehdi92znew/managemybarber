@@ -1,11 +1,12 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
-import Modal from '@/Components/Modal.vue';
-import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import axios from 'axios';
-import { trans } from '../lang';
+import { ref, watch, computed } from "vue";
+import { useForm, usePage } from "@inertiajs/vue3";
+import Modal from "@/Components/Modal.vue";
+import InputError from "@/Components/InputError.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import axios from "axios";
+import { trans } from "../lang";
+import Swal from "sweetalert2";
 
 const route = window.route;
 
@@ -13,86 +14,143 @@ const props = defineProps({
     show: Boolean,
     barbers: {
         type: Array,
-        default: () => []
+        default: () => [],
     },
     services: Array,
-    initialDate: [String, Object], 
+    initialDate: [String, Object],
     initialBarberId: Number,
     initialAppointment: {
         type: Object,
-        default: null
+        default: null,
     },
     isBarberView: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 });
 
-const emit = defineEmits(['close', 'appointment-created', 'appointment-updated']);
+const emit = defineEmits([
+    "close",
+    "appointment-created",
+    "appointment-updated",
+]);
 
 const pageProps = usePage();
 const currentUser = pageProps.props.auth?.user;
 
 const form = useForm({
-    barber_id: props.isBarberView ? (currentUser?.id) : (props.initialBarberId || ''),
+    barber_id: props.isBarberView
+        ? currentUser?.id
+        : props.initialBarberId || "",
     customer_id: null,
-    new_customer_name: '',
-    new_customer_phone: '',
+    new_customer_name: "",
+    new_customer_phone: "",
     service_ids: [],
-    start_time: '',
-    notes: '',
+    start_time: "",
+    notes: "",
     total_price: 0,
-    status: 'scheduled',
-    payment_status: 'unpaid',
+    status: "scheduled",
+    payment_status: "unpaid",
 });
 
 const isManualPrice = ref(false);
 
-const customerSearch = ref('');
+const customerSearch = ref("");
 const searchResults = ref([]);
 const isSearching = ref(false);
 const showNewCustomerFields = ref(false);
 
-watch(() => props.initialAppointment, (appt) => {
-    if (appt) {
-        form.barber_id = appt.extendedProps?.barber_id || appt.barber_id || '';
-        form.customer_id = appt.extendedProps?.customer_id || appt.customer_id || null;
-        form.service_ids = (appt.extendedProps?.services || appt.services || []).map(s => s.id || s);
-        form.start_time = new Date(appt.start).toISOString().slice(0, 16);
-        form.notes = appt.extendedProps?.notes || appt.notes || '';
-        customerSearch.value = appt.extendedProps?.customer_name || appt.customer?.name || '';
-        form.total_price = appt.extendedProps?.total_price || appt.total_price || 0;
-        form.status = appt.extendedProps?.status || appt.status || 'scheduled';
-        form.payment_status = appt.extendedProps?.payment_status || appt.payment_status || 'unpaid';
-        isManualPrice.value = true;
-    } else {
-        form.reset();
-        customerSearch.value = '';
-        isManualPrice.value = false;
-    }
-}, { immediate: true });
-
-watch(() => props.initialDate, (val) => {
-    if (val && typeof val === 'object' && val.start) {
-        let iso = val.start;
-        // Check if string contains 'T', if not append default time
-        if (iso.indexOf('T') === -1) {
-             form.start_time = iso + 'T09:00';
+watch(
+    () => props.initialAppointment,
+    (appt) => {
+        if (appt) {
+            form.barber_id =
+                appt.extendedProps?.barber_id || appt.barber_id || "";
+            form.customer_id =
+                appt.extendedProps?.customer_id || appt.customer_id || null;
+            form.service_ids = (
+                appt.extendedProps?.services ||
+                appt.services ||
+                []
+            ).map((s) => s.id || s);
+            const d = new Date(appt.start);
+            const pad = (n) => n.toString().padStart(2, "0");
+            form.start_time = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            form.notes = appt.extendedProps?.notes || appt.notes || "";
+            customerSearch.value =
+                appt.extendedProps?.customer_name || appt.customer?.name || "";
+            form.total_price =
+                appt.extendedProps?.total_price || appt.total_price || 0;
+            form.status =
+                appt.extendedProps?.status || appt.status || "scheduled";
+            form.payment_status =
+                appt.extendedProps?.payment_status ||
+                appt.payment_status ||
+                "unpaid";
+            isManualPrice.value = true;
         } else {
-             form.start_time = iso.slice(0, 16);
+            form.reset();
+            customerSearch.value = "";
+            isManualPrice.value = false;
         }
-    } else if (val) {
-        form.start_time = val;
-    }
-}, { immediate: true });
+    },
+    { immediate: true },
+);
 
-watch(() => props.initialBarberId, (val) => {
-    if (!props.isBarberView) form.barber_id = val;
-});
+watch(
+    () => props.initialDate,
+    (val) => {
+        if (val && typeof val === "object" && val.start) {
+            let iso = val.start;
+            // Check if string contains 'T', if not append default time
+            if (iso.indexOf("T") === -1) {
+                form.start_time = iso + "T09:00";
+            } else {
+                form.start_time = iso.slice(0, 16);
+            }
+        } else if (val) {
+            // Ensure format is compatible with datetime-local (YYYY-MM-DDTHH:mm)
+            if (typeof val === "string" && val.length > 16) {
+                form.start_time = val.slice(0, 16);
+            } else {
+                form.start_time = val;
+            }
+        }
+    },
+    { immediate: true },
+);
 
+watch(
+    () => props.initialBarberId,
+    (val) => {
+        if (!props.isBarberView) form.barber_id = val || "";
+    },
+    { immediate: true },
+);
 
+// Sync form values when modal is shown to handle cases where props didn't change but form was reset
+watch(
+    () => props.show,
+    (isVisible) => {
+        if (isVisible) {
+            if (props.initialBarberId && !props.isBarberView) {
+                form.barber_id = props.initialBarberId;
+            }
+            if (props.initialDate) {
+                if (
+                    typeof props.initialDate === "object" &&
+                    props.initialDate.start
+                ) {
+                    form.start_time = props.initialDate.start.slice(0, 16);
+                } else {
+                    form.start_time = props.initialDate.slice(0, 16);
+                }
+            }
+        }
+    },
+);
 
-const serviceSearch = ref('');
+const serviceSearch = ref("");
 const isServiceDropdownOpen = ref(false);
 
 const serviceSearchInput = ref(null);
@@ -107,28 +165,30 @@ const openServiceDropdown = () => {
 const filteredServices = computed(() => {
     if (!serviceSearch.value) return props.services;
     const search = serviceSearch.value.toLowerCase();
-    return props.services.filter(s => 
-        s.name.toLowerCase().includes(search)
-    );
+    return props.services.filter((s) => s.name.toLowerCase().includes(search));
 });
 
 const selectedServices = computed(() => {
-    return props.services.filter(s => form.service_ids.includes(s.id));
+    return props.services.filter((s) => form.service_ids.includes(s.id));
 });
 
 const totalDuration = computed(() => {
     return props.services
-        .filter(s => form.service_ids.includes(s.id))
+        .filter((s) => form.service_ids.includes(s.id))
         .reduce((sum, s) => sum + parseInt(s.duration_minutes), 0);
 });
 
-watch(() => form.service_ids, (newIds) => {
-    if (!isManualPrice.value) {
-        form.total_price = props.services
-            .filter(s => newIds.includes(s.id))
-            .reduce((sum, s) => sum + parseFloat(s.price), 0);
-    }
-}, { deep: true });
+watch(
+    () => form.service_ids,
+    (newIds) => {
+        if (!isManualPrice.value) {
+            form.total_price = props.services
+                .filter((s) => newIds.includes(s.id))
+                .reduce((sum, s) => sum + parseFloat(s.price), 0);
+        }
+    },
+    { deep: true },
+);
 
 const toggleService = (serviceId) => {
     const index = form.service_ids.indexOf(serviceId);
@@ -141,17 +201,20 @@ const toggleService = (serviceId) => {
 
 const serviceContainer = ref(null);
 const handleClickOutside = (event) => {
-    if (serviceContainer.value && !serviceContainer.value.contains(event.target)) {
+    if (
+        serviceContainer.value &&
+        !serviceContainer.value.contains(event.target)
+    ) {
         isServiceDropdownOpen.value = false;
     }
 };
 
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted } from "vue";
 onMounted(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 });
 onUnmounted(() => {
-    document.removeEventListener('mousedown', handleClickOutside);
+    document.removeEventListener("mousedown", handleClickOutside);
 });
 
 const handleCustomerSearch = async () => {
@@ -161,10 +224,12 @@ const handleCustomerSearch = async () => {
     }
     isSearching.value = true;
     try {
-        const routeName = props.isBarberView ? 'barber.customers.index' : 'owner.customers.index';
-        const response = await axios.get(route(routeName), { 
+        const routeName = props.isBarberView
+            ? "barber.customers.index"
+            : "owner.customers.index";
+        const response = await axios.get(route(routeName), {
             params: { search: customerSearch.value },
-            headers: { 'Accept': 'application/json' }
+            headers: { Accept: "application/json" },
         });
         searchResults.value = response.data;
     } catch (e) {
@@ -176,7 +241,7 @@ const handleCustomerSearch = async () => {
 
 const clearCustomerSelection = () => {
     form.customer_id = null;
-    customerSearch.value = '';
+    customerSearch.value = "";
     searchResults.value = [];
 };
 
@@ -187,57 +252,110 @@ const selectCustomer = (customer) => {
 };
 
 const buttonText = computed(() => {
-    const locale = pageProps.props.locale || 'en';
-    if (form.processing) return trans('booking_progress', locale);
-    return props.initialAppointment ? trans('save', locale) : trans('confirm_booking', locale);
+    const locale = pageProps.props.locale || "en";
+    if (form.processing) return trans("booking_progress", locale);
+    return props.initialAppointment
+        ? trans("save", locale)
+        : trans("confirm_booking", locale);
 });
 
 const submit = () => {
+    form.processing = true;
     if (props.initialAppointment) {
-        const routeName = props.isBarberView ? 'barber.appointments.update' : 'owner.appointments.update';
-        axios.patch(route(routeName, props.initialAppointment.id), form.data())
-            .then(response => {
-                emit('appointment-updated', response.data.appointment);
+        const routeName = props.isBarberView
+            ? "barber.appointments.update"
+            : "owner.appointments.update";
+        axios
+            .patch(route(routeName, props.initialAppointment.id), form.data())
+            .then((response) => {
+                emit("appointment-updated", response.data.appointment);
                 close();
+                const locale = pageProps.props.locale || "en";
+                Swal.fire({
+                    icon: "success",
+                    title: trans("success", locale) || "Success!",
+                    text: response.data?.message || "Appointment updated.",
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response?.status === 422) {
                     form.errors = error.response.data.errors;
                 } else {
-                    const locale = pageProps.props.locale || 'en';
-                    alert(error.response?.data?.message || trans('error_occurred', locale));
+                    const locale = pageProps.props.locale || "en";
+                    Swal.fire({
+                        icon: "error",
+                        title: trans("error", locale) || "Error!",
+                        text:
+                            error.response?.data?.message ||
+                            trans("error_occurred", locale),
+                    });
                 }
+            })
+            .finally(() => {
+                form.processing = false;
             });
     } else {
-        const endpoint = props.isBarberView ? route('barber.appointments.store') : route('owner.appointments.store');
-        axios.post(endpoint, form.data())
-            .then(response => {
-                emit('appointment-created', response.data.appointment);
+        const endpoint = props.isBarberView
+            ? route("barber.appointments.store")
+            : route("owner.appointments.store");
+        axios
+            .post(endpoint, form.data())
+            .then((response) => {
+                emit("appointment-created", response.data.appointment);
                 close();
+                const locale = pageProps.props.locale || "en";
+                Swal.fire({
+                    icon: "success",
+                    title: trans("success", locale) || "Success!",
+                    text: response.data?.message || "Appointment booked.",
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                });
             })
-            .catch(error => {
+            .catch((error) => {
                 if (error.response?.status === 422) {
                     form.errors = error.response.data.errors;
                 } else {
-                    const locale = pageProps.props.locale || 'en';
-                    alert(error.response?.data?.message || trans('error_occurred', locale));
+                    const locale = pageProps.props.locale || "en";
+                    Swal.fire({
+                        icon: "error",
+                        title: trans("error", locale) || "Error!",
+                        text:
+                            error.response?.data?.message ||
+                            trans("error_occurred", locale),
+                    });
                 }
+            })
+            .finally(() => {
+                form.processing = false;
             });
     }
 };
 
 const formatCurrency = (value) => {
-    let locale = 'en-US';
-    const currentLocale = pageProps.props.locale || 'en';
-    if (currentLocale === 'fr' || currentLocale === 'ar') locale = 'fr-FR';
-    return new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol' }).format(value || 0);
+    let locale = "en-US";
+    const currentLocale = pageProps.props.locale || "en";
+    if (currentLocale === "fr" || currentLocale === "ar") locale = "fr-FR";
+    return new Intl.NumberFormat(locale, {
+        style: "currency",
+        currency: "USD",
+        currencyDisplay: "narrowSymbol",
+    }).format(value || 0);
 };
 
 const close = () => {
-    emit('close');
+    emit("close");
     form.reset();
     form.clearErrors();
-    customerSearch.value = '';
+    customerSearch.value = "";
     showNewCustomerFields.value = false;
 };
 </script>
@@ -246,28 +364,70 @@ const close = () => {
     <Modal :show="show" @close="close">
         <div class="p-4 sm:p-8 bg-white dark:bg-slate-900">
             <div class="flex items-center justify-between mb-6 sm:mb-8">
-                <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+                <h2
+                    class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3"
+                >
                     <div class="p-2 rounded-xl bg-amber-500/10 text-amber-500">
-                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <svg
+                            class="h-5 w-5 sm:h-6 sm:w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4v16m8-8H4"
+                            />
+                        </svg>
                     </div>
-                    {{ __('book_appointment') }}
+                    {{ __("book_appointment") }}
                 </h2>
-                <button @click="close" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                <button
+                    @click="close"
+                    class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
+                >
+                    <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
                 </button>
             </div>
 
             <div class="space-y-5 sm:space-y-6">
                 <!-- Barber Selection -->
-                <div v-if="!isBarberView" class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('barber') }}</p>
+                <div
+                    v-if="!isBarberView"
+                    class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
+                >
+                    <p
+                        class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
+                    >
+                        {{ __("barber") }}
+                    </p>
                     <select
                         id="barber"
                         v-model="form.barber_id"
                         class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm"
                     >
-                        <option value="" disabled>{{ __('select_barber') }}</option>
-                        <option v-for="barber in barbers" :key="barber.id" :value="barber.id">
+                        <option value="" disabled>
+                            {{ __("select_barber") }}
+                        </option>
+                        <option
+                            v-for="barber in barbers"
+                            :key="barber.id"
+                            :value="barber.id"
+                        >
                             {{ barber.name }}
                         </option>
                     </select>
@@ -275,27 +435,48 @@ const close = () => {
                 </div>
 
                 <!-- Start Time -->
-                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('start_time') }}</p>
+                <div
+                    class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
+                >
+                    <p
+                        class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
+                    >
+                        {{ __("start_time") }}
+                    </p>
                     <input
                         id="start_time"
                         v-model="form.start_time"
                         type="datetime-local"
                         class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm appearance-none"
                     />
-                    <InputError :message="form.errors.start_time" class="mt-2" />
+                    <InputError
+                        :message="form.errors.start_time"
+                        class="mt-2"
+                    />
                 </div>
 
                 <!-- Customer Selection -->
-                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                <div
+                    class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
+                >
                     <div class="flex items-center justify-between mb-2">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __('customer') }}</p>
-                        <button 
-                            type="button" 
-                            @click="showNewCustomerFields = !showNewCustomerFields"
+                        <p
+                            class="text-[10px] font-black uppercase tracking-widest text-slate-400"
+                        >
+                            {{ __("customer") }}
+                        </p>
+                        <button
+                            type="button"
+                            @click="
+                                showNewCustomerFields = !showNewCustomerFields
+                            "
                             class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600 transition-colors"
                         >
-                            {{ showNewCustomerFields ? __('select_existing') : __('create_new') }}
+                            {{
+                                showNewCustomerFields
+                                    ? __("select_existing")
+                                    : __("create_new")
+                            }}
                         </button>
                     </div>
 
@@ -309,38 +490,98 @@ const close = () => {
                                 :placeholder="__('search_placeholder_short')"
                                 autocomplete="off"
                             />
-                            <div v-if="isSearching" class="absolute right-0 top-0">
-                                <svg class="animate-spin h-4 w-4 text-amber-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            <div
+                                v-if="isSearching"
+                                class="absolute right-0 top-0"
+                            >
+                                <svg
+                                    class="animate-spin h-4 w-4 text-amber-500"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        class="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                    ></circle>
+                                    <path
+                                        class="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
                                 </svg>
                             </div>
                         </div>
-                        
-                        <ul v-if="searchResults.length > 0" class="absolute z-50 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl mt-4 max-h-60 overflow-y-auto shadow-2xl premium-shadow">
-                            <li 
-                                v-for="customer in searchResults" 
+
+                        <ul
+                            v-if="searchResults.length > 0"
+                            class="absolute z-50 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl mt-4 max-h-60 overflow-y-auto shadow-2xl premium-shadow"
+                        >
+                            <li
+                                v-for="customer in searchResults"
                                 :key="customer.id"
                                 @click="selectCustomer(customer)"
                                 class="px-5 py-4 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer border-b border-slate-100 dark:border-white/5 last:border-0 transition-colors"
                             >
-                                <div class="text-sm font-bold text-slate-900 dark:text-white">{{ customer.name }}</div>
-                                <div class="text-[10px] font-medium text-slate-500 mt-0.5 tracking-wider">{{ customer.phone }}</div>
+                                <div
+                                    class="text-sm font-bold text-slate-900 dark:text-white"
+                                >
+                                    {{ customer.name }}
+                                </div>
+                                <div
+                                    class="text-[10px] font-medium text-slate-500 mt-0.5 tracking-wider"
+                                >
+                                    {{ customer.phone }}
+                                </div>
                             </li>
                         </ul>
 
-                        <div v-if="form.customer_id" class="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex justify-between items-center text-xs text-emerald-700 dark:text-emerald-400">
-                             <span class="font-bold flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <div
+                            v-if="form.customer_id"
+                            class="mt-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex justify-between items-center text-xs text-emerald-700 dark:text-emerald-400"
+                        >
+                            <span class="font-bold flex items-center gap-2">
+                                <svg
+                                    class="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M5 13l4 4L19 7"
+                                    />
+                                </svg>
                                 {{ customerSearch }}
-                             </span>
-                             <button type="button" @click="clearCustomerSelection" class="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 transition-colors">{{ __('change') }}</button>
+                            </span>
+                            <button
+                                type="button"
+                                @click="clearCustomerSelection"
+                                class="text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 transition-colors"
+                            >
+                                {{ __("change") }}
+                            </button>
                         </div>
                     </div>
 
-                    <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                         <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5">
-                            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{{ __('customer_name') }}</p>
+                    <div
+                        v-else
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2"
+                    >
+                        <div
+                            class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5"
+                        >
+                            <p
+                                class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1"
+                            >
+                                {{ __("customer_name") }}
+                            </p>
                             <input
                                 v-model="form.new_customer_name"
                                 type="text"
@@ -348,8 +589,14 @@ const close = () => {
                                 :placeholder="__('name_placeholder')"
                             />
                         </div>
-                         <div class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5">
-                            <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{{ __('phone_number') }}</p>
+                        <div
+                            class="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5"
+                        >
+                            <p
+                                class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1"
+                            >
+                                {{ __("phone_number") }}
+                            </p>
                             <input
                                 v-model="form.new_customer_phone"
                                 type="text"
@@ -361,95 +608,197 @@ const close = () => {
                 </div>
 
                 <!-- Service Selection (Select2 style) -->
-                <div ref="serviceContainer" class="p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 relative">
-                     <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('services') }}</p>
-                     
-                     <div class="relative">
+                <div
+                    ref="serviceContainer"
+                    class="p-3 sm:p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 relative"
+                >
+                    <p
+                        class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
+                    >
+                        {{ __("services") }}
+                    </p>
+
+                    <div class="relative">
                         <!-- Selection Area / Dropdown Trigger -->
-                        <div 
+                        <div
                             @click="openServiceDropdown"
                             class="min-h-[46px] p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex flex-wrap gap-2 items-center cursor-pointer hover:border-amber-500/30 transition-all focus-within:ring-2 focus-within:ring-amber-500/20"
                         >
-                            <div v-if="selectedServices.length === 0 && !isServiceDropdownOpen" class="text-xs text-slate-400 px-2 italic">
-                                {{ __('select_services') }}
+                            <div
+                                v-if="
+                                    selectedServices.length === 0 &&
+                                    !isServiceDropdownOpen
+                                "
+                                class="text-xs text-slate-400 px-2 italic"
+                            >
+                                {{ __("select_services") }}
                             </div>
 
-                            <div 
-                                v-for="service in selectedServices" 
+                            <div
+                                v-for="service in selectedServices"
                                 :key="service.id"
                                 class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 animate-in fade-in zoom-in duration-200"
                             >
-                                <span class="text-[10px] font-black uppercase tracking-wider">{{ service.name }}</span>
-                                <button 
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-wider"
+                                    >{{ service.name }}</span
+                                >
+                                <button
                                     @click.stop="toggleService(service.id)"
                                     class="p-0.5 hover:bg-amber-500/20 rounded-md transition-colors"
                                 >
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    <svg
+                                        class="w-3 h-3"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
+                                    </svg>
                                 </button>
                             </div>
 
                             <!-- Inline Search Input (Select2 style) -->
-                            <input 
-                                v-if="isServiceDropdownOpen || selectedServices.length === 0"
+                            <input
+                                v-if="
+                                    isServiceDropdownOpen ||
+                                    selectedServices.length === 0
+                                "
                                 ref="serviceSearchInput"
                                 v-model="serviceSearch"
                                 @click.stop="isServiceDropdownOpen = true"
                                 type="text"
                                 class="flex-1 min-w-[120px] bg-transparent border-none text-xs font-bold text-slate-900 dark:text-white focus:ring-0 p-1"
-                                :placeholder="selectedServices.length > 0 ? '' : __('search_services')"
+                                :placeholder="
+                                    selectedServices.length > 0
+                                        ? ''
+                                        : __('search_services')
+                                "
                                 autocomplete="off"
                             />
 
                             <div class="ml-auto px-1">
-                                <svg 
-                                    class="w-4 h-4 text-slate-400 transition-transform duration-300" 
-                                    :class="{'rotate-180': isServiceDropdownOpen}"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                <svg
+                                    class="w-4 h-4 text-slate-400 transition-transform duration-300"
+                                    :class="{
+                                        'rotate-180': isServiceDropdownOpen,
+                                    }"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
                                 >
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
                                 </svg>
                             </div>
                         </div>
 
                         <!-- Dropdown Menu (Optimized for Mobile) -->
-                        <div 
-                            v-if="isServiceDropdownOpen" 
+                        <div
+                            v-if="isServiceDropdownOpen"
                             class="absolute z-[100] left-0 right-0 mt-2 p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-top-2 duration-300"
                         >
-                            <div class="max-h-56 sm:max-h-48 overflow-y-auto no-scrollbar space-y-1">
-                                <div 
-                                    v-for="service in filteredServices" 
+                            <div
+                                class="max-h-56 sm:max-h-48 overflow-y-auto no-scrollbar space-y-1"
+                            >
+                                <div
+                                    v-for="service in filteredServices"
                                     :key="service.id"
                                     @click.stop="toggleService(service.id)"
                                     class="flex items-center justify-between p-3.5 sm:p-3 rounded-xl cursor-pointer transition-all active:scale-[0.98]"
-                                    :class="form.service_ids.includes(service.id) ? 'bg-amber-500/10 border-amber-500/30' : 'hover:bg-slate-50 dark:hover:bg-white/5'"
+                                    :class="
+                                        form.service_ids.includes(service.id)
+                                            ? 'bg-amber-500/10 border-amber-500/30'
+                                            : 'hover:bg-slate-50 dark:hover:bg-white/5'
+                                    "
                                 >
                                     <div class="flex items-center gap-3">
-                                        <div 
+                                        <div
                                             class="w-5 h-5 sm:w-4 sm:h-4 rounded border flex items-center justify-center transition-all"
-                                            :class="form.service_ids.includes(service.id) ? 'bg-amber-500 border-amber-500' : 'border-slate-300 dark:border-slate-700'"
+                                            :class="
+                                                form.service_ids.includes(
+                                                    service.id,
+                                                )
+                                                    ? 'bg-amber-500 border-amber-500'
+                                                    : 'border-slate-300 dark:border-slate-700'
+                                            "
                                         >
-                                            <svg v-if="form.service_ids.includes(service.id)" class="w-3 h-3 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                            <svg
+                                                v-if="
+                                                    form.service_ids.includes(
+                                                        service.id,
+                                                    )
+                                                "
+                                                class="w-3 h-3 text-slate-900"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="3"
+                                                    d="M5 13l4 4L19 7"
+                                                />
+                                            </svg>
                                         </div>
                                         <div>
-                                            <p class="text-xs sm:text-xs font-bold text-slate-900 dark:text-white">{{ service.name }}</p>
-                                            <p class="text-[10px] font-medium text-slate-500 tracking-wider">{{ service.duration_minutes }}m</p>
+                                            <p
+                                                class="text-xs sm:text-xs font-bold text-slate-900 dark:text-white"
+                                            >
+                                                {{ service.name }}
+                                            </p>
+                                            <p
+                                                class="text-[10px] font-medium text-slate-500 tracking-wider"
+                                            >
+                                                {{ service.duration_minutes }}m
+                                            </p>
                                         </div>
                                     </div>
-                                    <span class="text-xs font-black text-amber-600 dark:text-amber-500">{{ formatCurrency(service.price) }}</span>
+                                    <span
+                                        class="text-xs font-black text-amber-600 dark:text-amber-500"
+                                        >{{
+                                            formatCurrency(service.price)
+                                        }}</span
+                                    >
                                 </div>
-                                <div v-if="filteredServices.length === 0" class="p-8 text-center">
-                                    <p class="text-xs text-slate-400 font-bold italic">{{ __('no_results_found') }}</p>
+                                <div
+                                    v-if="filteredServices.length === 0"
+                                    class="p-8 text-center"
+                                >
+                                    <p
+                                        class="text-xs text-slate-400 font-bold italic"
+                                    >
+                                        {{ __("no_results_found") }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
-                     </div>
-                     <InputError :message="form.errors.service_ids" class="mt-2" />
+                    </div>
+                    <InputError
+                        :message="form.errors.service_ids"
+                        class="mt-2"
+                    />
                 </div>
 
                 <!-- Notes -->
-                <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('notes') }}</p>
+                <div
+                    class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
+                >
+                    <p
+                        class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
+                    >
+                        {{ __("notes") }}
+                    </p>
                     <textarea
                         v-model="form.notes"
                         rows="2"
@@ -459,53 +808,92 @@ const close = () => {
                 </div>
 
                 <!-- Status & Payment Status -->
-                <div v-if="initialAppointment" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('status') }}</p>
+                <div
+                    v-if="initialAppointment"
+                    class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                >
+                    <div
+                        class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
+                    >
+                        <p
+                            class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
+                        >
+                            {{ __("status") }}
+                        </p>
                         <select
                             v-model="form.status"
                             class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm"
                         >
-                            <option value="scheduled">{{ __('scheduled') }}</option>
-                            <option value="completed">{{ __('completed') }}</option>
-                            <option value="cancelled">{{ __('cancelled') }}</option>
+                            <option value="scheduled">
+                                {{ __("scheduled") }}
+                            </option>
+                            <option value="completed">
+                                {{ __("completed") }}
+                            </option>
+                            <option value="cancelled">
+                                {{ __("cancelled") }}
+                            </option>
                         </select>
                     </div>
-                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('payment_status') }}</p>
+                    <div
+                        class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
+                    >
+                        <p
+                            class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
+                        >
+                            {{ __("payment_status") }}
+                        </p>
                         <select
                             v-model="form.payment_status"
                             class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm"
                         >
-                            <option value="unpaid">{{ __('unpaid') }}</option>
-                            <option value="semi-paid">{{ __('semi_paid') }}</option>
-                            <option value="paid">{{ __('paid') }}</option>
+                            <option value="unpaid">{{ __("unpaid") }}</option>
+                            <option value="semi-paid">
+                                {{ __("semi_paid") }}
+                            </option>
+                            <option value="paid">{{ __("paid") }}</option>
                         </select>
                     </div>
                 </div>
-                
+
                 <!-- Summary -->
-                <div class="flex flex-col sm:flex-row gap-4 items-center justify-between p-5 rounded-3xl bg-slate-900 dark:bg-amber-500 shadow-xl">
+                <div
+                    class="flex flex-col sm:flex-row gap-4 items-center justify-between p-5 rounded-3xl bg-slate-900 dark:bg-amber-500 shadow-xl"
+                >
                     <div class="flex items-center gap-6">
                         <div class="text-center sm:text-left">
-                            <p class="text-[9px] font-black uppercase tracking-widest text-white/40 dark:text-slate-900/50 mb-0.5">{{ __('duration_label') }}</p>
-                            <p class="text-sm font-black text-white dark:text-slate-900">{{ totalDuration }} {{ __('mins_short') }}</p>
+                            <p
+                                class="text-[9px] font-black uppercase tracking-widest text-white/40 dark:text-slate-900/50 mb-0.5"
+                            >
+                                {{ __("duration_label") }}
+                            </p>
+                            <p
+                                class="text-sm font-black text-white dark:text-slate-900"
+                            >
+                                {{ totalDuration }} {{ __("mins_short") }}
+                            </p>
                         </div>
-                        <div class="w-px h-8 bg-white/10 dark:bg-slate-900/10"></div>
+                        <div
+                            class="w-px h-8 bg-white/10 dark:bg-slate-900/10"
+                        ></div>
                         <div class="text-center sm:text-left">
-                            <p class="text-[9px] font-black uppercase tracking-widest text-white/40 dark:text-slate-900/50 mb-0.5">{{ __('total_label') }}</p>
-                            <input 
-                                v-model="form.total_price" 
-                                type="number" 
+                            <p
+                                class="text-[9px] font-black uppercase tracking-widest text-white/40 dark:text-slate-900/50 mb-0.5"
+                            >
+                                {{ __("total_label") }}
+                            </p>
+                            <input
+                                v-model="form.total_price"
+                                type="number"
                                 step="0.01"
                                 @input="isManualPrice = true"
                                 class="w-24 bg-transparent border-none p-0 text-sm font-black text-white dark:text-slate-900 focus:ring-0"
                             />
                         </div>
                     </div>
-                    
-                    <button 
-                        @click="submit" 
+
+                    <button
+                        @click="submit"
                         class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-amber-500 dark:bg-slate-900 text-slate-900 dark:text-amber-500 text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
                         :disabled="form.processing"
                     >

@@ -41,8 +41,8 @@ class AppointmentController extends Controller
             return [
                 'id' => $appointment->id,
                 'title' => $appointment->customer->name,
-                'start' => $appointment->start_time->toIso8601String(),
-                'end' => $appointment->end_time->toIso8601String(),
+                'start' => $appointment->start_time->toDateTimeString(),
+                'end' => $appointment->end_time->toDateTimeString(),
                 'extendedProps' => [
                     'barber_id' => auth()->id(),
                     'barber_name' => auth()->user()->name,

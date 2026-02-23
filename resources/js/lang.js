@@ -42,6 +42,7 @@ export const translations = {
         edit: "Edit",
         our_barbers: "Our Barbers",
         no_barbers_found: "No barbers found.",
+        please_insert_barber: "Please insert a barber first to manage the calendar.",
         percentage: "Percentage (%)",
         fixed: "Fixed Amount ($)",
         confirm_delete_barber: "Are you sure you want to delete this barber?",
@@ -281,6 +282,7 @@ export const translations = {
         update_payment: "Update Payment",
         specify_type: "Specify Type",
         specify_type_placeholder: "e.g. Market, Repair...",
+        click_to_book: "Click to Book",
     },
     fr: {
         dashboard: "Tableau de Bord",
@@ -325,6 +327,7 @@ export const translations = {
         edit: "Modifier",
         our_barbers: "Nos Coiffeurs",
         no_barbers_found: "Aucun coiffeur trouvé.",
+        please_insert_barber: "Veuillez d'abord ajouter un coiffeur pour gérer le calendrier.",
         percentage: "Pourcentage (%)",
         fixed: "Montant Fixe ($)",
         confirm_delete_barber: "Êtes-vous sûr de vouloir supprimer ce coiffeur ?",
@@ -564,6 +567,7 @@ export const translations = {
         update_payment: "Mettre à jour le paiement",
         specify_type: "Préciser le type",
         specify_type_placeholder: "ex. Marché, Réparation...",
+        click_to_book: "Cliquer pour réserver",
     },
     ar: {
         dashboard: "لوحة التحكم",
@@ -608,6 +612,7 @@ export const translations = {
         edit: "تعديل",
         our_barbers: "حلاقونا",
         no_barbers_found: "لم يتم العثور على حلاقين.",
+        please_insert_barber: "الرجاء إضافة حلاق أولاً لإدارة التقويم.",
         percentage: "نسبة مئوية (%)",
         fixed: "مبلغ ثابت ($)",
         confirm_delete_barber: "هل أنت متأكد من حذف هذا الحلاق؟",
@@ -841,6 +846,7 @@ export const translations = {
         all_payment_statuses: "جميع حالات الدفع",
         select_services: "اختر الخدمات",
         search_services: "ابحث عن الخدمات...",
+        click_to_book: "انقر للحجز",
     }
 };
 
