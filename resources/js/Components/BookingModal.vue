@@ -273,26 +273,110 @@ const submit = () => {
                 const locale = pageProps.props.locale || "en";
                 Swal.fire({
                     icon: "success",
-                    title: trans("success", locale) || "Success!",
+                    title: trans("success", locale) || "Succès!",
                     text: response.data?.message || "Appointment updated.",
                     toast: true,
                     position: "top-end",
                     showConfirmButton: false,
                     timer: 3000,
                     timerProgressBar: true,
+                    customClass: {
+                        container: "z-[99999]",
+                    },
                 });
             })
             .catch((error) => {
                 if (error.response?.status === 422) {
-                    form.errors = error.response.data.errors;
+                    // Check if it's a custom Exception thrown by PHP (no 'errors' array, just 'message')
+                    if (
+                        error.response.data.message &&
+                        !error.response.data.errors
+                    ) {
+                        const locale = pageProps.props.locale || "en";
+                        let errorMsg = error.response.data.message;
+
+                        if (
+                            errorMsg ===
+                            "This time slot is already booked for the selected barber."
+                        ) {
+                            errorMsg =
+                                trans(
+                                    "error_time_slot_booked_barber",
+                                    locale,
+                                ) || errorMsg;
+                        } else if (
+                            errorMsg === "This time slot is already booked."
+                        ) {
+                            errorMsg =
+                                trans("error_time_slot_booked", locale) ||
+                                errorMsg;
+                        }
+
+                        Swal.fire({
+                            target: document.getElementById(
+                                "bookingModalDialog",
+                            ),
+                            icon: "error",
+                            title: trans("error", locale) || "Erreur!",
+                            text: errorMsg,
+                            customClass: {
+                                container: "z-[99999]",
+                            },
+                        });
+                        return;
+                    }
+
+                    const errors = error.response.data.errors;
+                    const flatErrors = {};
+                    const locale = pageProps.props.locale || "en";
+
+                    for (const key in errors) {
+                        let msg = Array.isArray(errors[key])
+                            ? errors[key][0]
+                            : errors[key];
+
+                        if (key === "barber_id" && msg.includes("required"))
+                            msg = trans("error_barber_required", locale);
+                        if (key === "service_ids" && msg.includes("required"))
+                            msg = trans("error_service_required", locale);
+                        if (key === "start_time" && msg.includes("required"))
+                            msg = trans("error_start_time_required", locale);
+                        if (
+                            key === "new_customer_name" &&
+                            msg.includes("required")
+                        )
+                            msg = trans("error_customer_name_required", locale);
+
+                        flatErrors[key] = msg;
+                    }
+
+                    form.errors = flatErrors;
+                    const firstErrorMsg = Object.values(flatErrors)[0];
+
+                    Swal.fire({
+                        target: document.getElementById("bookingModalDialog"),
+                        icon: "error",
+                        title: trans("error", locale) || "Erreur!",
+                        text:
+                            firstErrorMsg ||
+                            trans("error_occurred", locale) ||
+                            "Veuillez vérifier les champs du formulaire et réessayer.",
+                        customClass: {
+                            container: "z-[99999]",
+                        },
+                    });
                 } else {
                     const locale = pageProps.props.locale || "en";
                     Swal.fire({
+                        target: document.getElementById("bookingModalDialog"),
                         icon: "error",
-                        title: trans("error", locale) || "Error!",
+                        title: trans("error", locale) || "Erreur!",
                         text:
                             error.response?.data?.message ||
                             trans("error_occurred", locale),
+                        customClass: {
+                            container: "z-[99999]",
+                        },
                     });
                 }
             })
@@ -311,26 +395,110 @@ const submit = () => {
                 const locale = pageProps.props.locale || "en";
                 Swal.fire({
                     icon: "success",
-                    title: trans("success", locale) || "Success!",
+                    title: trans("success", locale) || "Succès!",
                     text: response.data?.message || "Appointment booked.",
                     toast: true,
                     position: "top-end",
                     showConfirmButton: false,
                     timer: 3000,
                     timerProgressBar: true,
+                    customClass: {
+                        container: "z-[99999]",
+                    },
                 });
             })
             .catch((error) => {
                 if (error.response?.status === 422) {
-                    form.errors = error.response.data.errors;
+                    // Check if it's a custom Exception thrown by PHP (no 'errors' array, just 'message')
+                    if (
+                        error.response.data.message &&
+                        !error.response.data.errors
+                    ) {
+                        const locale = pageProps.props.locale || "en";
+                        let errorMsg = error.response.data.message;
+
+                        if (
+                            errorMsg ===
+                            "This time slot is already booked for the selected barber."
+                        ) {
+                            errorMsg =
+                                trans(
+                                    "error_time_slot_booked_barber",
+                                    locale,
+                                ) || errorMsg;
+                        } else if (
+                            errorMsg === "This time slot is already booked."
+                        ) {
+                            errorMsg =
+                                trans("error_time_slot_booked", locale) ||
+                                errorMsg;
+                        }
+
+                        Swal.fire({
+                            target: document.getElementById(
+                                "bookingModalDialog",
+                            ),
+                            icon: "error",
+                            title: trans("error", locale) || "Erreur!",
+                            text: errorMsg,
+                            customClass: {
+                                container: "z-[99999]",
+                            },
+                        });
+                        return;
+                    }
+
+                    const errors = error.response.data.errors;
+                    const flatErrors = {};
+                    const locale = pageProps.props.locale || "en";
+
+                    for (const key in errors) {
+                        let msg = Array.isArray(errors[key])
+                            ? errors[key][0]
+                            : errors[key];
+
+                        if (key === "barber_id" && msg.includes("required"))
+                            msg = trans("error_barber_required", locale);
+                        if (key === "service_ids" && msg.includes("required"))
+                            msg = trans("error_service_required", locale);
+                        if (key === "start_time" && msg.includes("required"))
+                            msg = trans("error_start_time_required", locale);
+                        if (
+                            key === "new_customer_name" &&
+                            msg.includes("required")
+                        )
+                            msg = trans("error_customer_name_required", locale);
+
+                        flatErrors[key] = msg;
+                    }
+
+                    form.errors = flatErrors;
+                    const firstErrorMsg = Object.values(flatErrors)[0];
+
+                    Swal.fire({
+                        target: document.getElementById("bookingModalDialog"),
+                        icon: "error",
+                        title: trans("error", locale) || "Erreur!",
+                        text:
+                            firstErrorMsg ||
+                            trans("error_occurred", locale) ||
+                            "Veuillez vérifier les champs du formulaire et réessayer.",
+                        customClass: {
+                            container: "z-[99999]",
+                        },
+                    });
                 } else {
                     const locale = pageProps.props.locale || "en";
                     Swal.fire({
+                        target: document.getElementById("bookingModalDialog"),
                         icon: "error",
-                        title: trans("error", locale) || "Error!",
+                        title: trans("error", locale) || "Erreur!",
                         text:
                             error.response?.data?.message ||
                             trans("error_occurred", locale),
+                        customClass: {
+                            container: "z-[99999]",
+                        },
                     });
                 }
             })
@@ -361,7 +529,7 @@ const close = () => {
 </script>
 
 <template>
-    <Modal :show="show" @close="close">
+    <Modal id="bookingModalDialog" :show="show" @close="close">
         <div class="p-4 sm:p-8 bg-white dark:bg-slate-900">
             <div class="flex items-center justify-between mb-6 sm:mb-8">
                 <h2
@@ -904,3 +1072,9 @@ const close = () => {
         </div>
     </Modal>
 </template>
+
+<style>
+.swal2-container {
+    z-index: 100000 !important;
+}
+</style>
