@@ -105,7 +105,10 @@ const formatDayTitle = computed(() => {
 
 const getBarberAppointments = (barberId) => {
     return appointments.value.filter(
-        (a) => a.extendedProps.barber_id === barberId,
+        // Use loose equality (==) or String/Number casting to ensure PDO driver type mis-matches (Strings vs Ints) don't break the filter in Production.
+        (a) =>
+            a.extendedProps &&
+            String(a.extendedProps.barber_id) === String(barberId),
     );
 };
 
