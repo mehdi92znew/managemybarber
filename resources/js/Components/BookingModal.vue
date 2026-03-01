@@ -18,7 +18,7 @@ const props = defineProps({
     },
     services: Array,
     initialDate: [String, Object],
-    initialBarberId: Number,
+    initialBarberId: [Number, String],
     initialAppointment: {
         type: Object,
         default: null,
@@ -49,11 +49,13 @@ const form = useForm({
     start_time: "",
     notes: "",
     total_price: 0,
+    total_duration: 0,
     status: "scheduled",
     payment_status: "unpaid",
 });
 
 const isManualPrice = ref(false);
+const isManualDuration = ref(false);
 
 const customerSearch = ref("");
 const searchResults = ref([]);
@@ -87,11 +89,20 @@ watch(
                 appt.extendedProps?.payment_status ||
                 appt.payment_status ||
                 "unpaid";
+            if (appt.end && appt.start) {
+                const end = new Date(appt.end);
+                const start = new Date(appt.start);
+                form.total_duration = Math.round((end - start) / 60000);
+            } else {
+                form.total_duration = 0;
+            }
             isManualPrice.value = true;
+            isManualDuration.value = true;
         } else {
             form.reset();
             customerSearch.value = "";
             isManualPrice.value = false;
+            isManualDuration.value = false;
         }
     },
     { immediate: true },
@@ -172,15 +183,14 @@ const selectedServices = computed(() => {
     return props.services.filter((s) => form.service_ids.includes(s.id));
 });
 
-const totalDuration = computed(() => {
-    return props.services
-        .filter((s) => form.service_ids.includes(s.id))
-        .reduce((sum, s) => sum + parseInt(s.duration_minutes), 0);
-});
-
 watch(
     () => form.service_ids,
     (newIds) => {
+        if (!isManualDuration.value) {
+            form.total_duration = props.services
+                .filter((s) => newIds.includes(s.id))
+                .reduce((sum, s) => sum + parseInt(s.duration_minutes), 0);
+        }
         if (!isManualPrice.value) {
             form.total_price = props.services
                 .filter((s) => newIds.includes(s.id))
@@ -265,8 +275,14 @@ const submit = () => {
         const routeName = props.isBarberView
             ? "barber.appointments.update"
             : "owner.appointments.update";
+
+        // Prepare data to send
+        const dataToSend = { ...form.data() };
+        dataToSend.total_duration = form.total_duration;
+        dataToSend.total_price = form.total_price;
+
         axios
-            .patch(route(routeName, props.initialAppointment.id), form.data())
+            .patch(route(routeName, props.initialAppointment.id), dataToSend)
             .then((response) => {
                 emit("appointment-updated", response.data.appointment);
                 close();
@@ -387,8 +403,14 @@ const submit = () => {
         const endpoint = props.isBarberView
             ? route("barber.appointments.store")
             : route("owner.appointments.store");
+
+        // Prepare data for creation as well
+        const dataToSend = { ...form.data() };
+        dataToSend.total_duration = form.total_duration;
+        dataToSend.total_price = form.total_price;
+
         axios
-            .post(endpoint, form.data())
+            .post(endpoint, dataToSend)
             .then((response) => {
                 emit("appointment-created", response.data.appointment);
                 close();
@@ -525,6 +547,54 @@ const close = () => {
     form.clearErrors();
     customerSearch.value = "";
     showNewCustomerFields.value = false;
+};
+
+const deleteAppointment = () => {
+    const locale = pageProps.props.locale || "en";
+    if (
+        !confirm(
+            trans("confirm_delete_appointment", locale) ||
+                "Are you sure you want to delete this appointment?",
+        )
+    )
+        return;
+
+    const routeName = props.isBarberView
+        ? "barber.appointments.destroy"
+        : "owner.appointments.destroy";
+
+    axios
+        .delete(route(routeName, props.initialAppointment.id))
+        .then(() => {
+            emit("appointment-updated");
+            close();
+            Swal.fire({
+                icon: "success",
+                title: trans("success", locale) || "Success",
+                text: "Appointment deleted.",
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                customClass: {
+                    container: "z-[99999]",
+                },
+            });
+        })
+        .catch((error) => {
+            Swal.fire({
+                target: document.getElementById("bookingModalDialog"),
+                icon: "error",
+                title: trans("error", locale) || "Error",
+                text:
+                    error.response?.data?.message ||
+                    "Failed to delete appointment.",
+                customClass: {
+                    container: "z-[99999]",
+                },
+            });
+        });
 };
 </script>
 
@@ -1035,11 +1105,22 @@ const close = () => {
                             >
                                 {{ __("duration_label") }}
                             </p>
-                            <p
-                                class="text-sm font-black text-white dark:text-slate-900"
+                            <div
+                                class="flex items-center gap-1 justify-center sm:justify-start"
                             >
-                                {{ totalDuration }} {{ __("mins_short") }}
-                            </p>
+                                <input
+                                    v-model="form.total_duration"
+                                    type="number"
+                                    step="1"
+                                    min="1"
+                                    @input="isManualDuration = true"
+                                    class="w-14 sm:w-16 bg-transparent border-none p-0 text-sm font-black text-white dark:text-slate-900 focus:ring-0 text-right sm:text-left"
+                                />
+                                <span
+                                    class="text-sm font-black text-white dark:text-slate-900"
+                                    >{{ __("mins_short") }}</span
+                                >
+                            </div>
                         </div>
                         <div
                             class="w-px h-8 bg-white/10 dark:bg-slate-900/10"
@@ -1060,13 +1141,24 @@ const close = () => {
                         </div>
                     </div>
 
-                    <button
-                        @click="submit"
-                        class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-amber-500 dark:bg-slate-900 text-slate-900 dark:text-amber-500 text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
-                        :disabled="form.processing"
+                    <div
+                        class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0"
                     >
-                        {{ buttonText }}
-                    </button>
+                        <button
+                            v-if="initialAppointment"
+                            @click="deleteAppointment"
+                            class="w-full sm:w-auto px-6 py-4 rounded-2xl bg-red-500/10 text-red-500 hover:bg-red-500/20 text-xs font-black uppercase tracking-widest transition-all"
+                        >
+                            {{ __("delete") }}
+                        </button>
+                        <button
+                            @click="submit"
+                            class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-amber-500 dark:bg-slate-900 text-slate-900 dark:text-amber-500 text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
+                            :disabled="form.processing"
+                        >
+                            {{ buttonText }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

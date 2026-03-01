@@ -6,10 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import axios from "axios";
-import Modal from "@/Components/Modal.vue";
 import BookingModal from "@/Components/BookingModal.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { trans } from "@/lang";
 import { usePage, Link } from "@inertiajs/vue3";
 
@@ -52,17 +49,11 @@ const currentTitle = ref("");
 const isBookingModalOpen = ref(false);
 const selectedDate = ref(null);
 const selectedEvent = ref(null);
-const isViewModalOpen = ref(false);
 const selectedBarberId = ref(
     !props.isBarberView && props.barbers && props.barbers.length > 0
         ? props.barbers[0].id
         : "",
 );
-
-const checkoutForm = ref({
-    price_override: 0,
-    payment_status: "paid",
-});
 
 const eventSource = computed(() => {
     const baseUrl = props.isBarberView
@@ -119,89 +110,8 @@ const updateAppointmentTime = (event, revertCallback) => {
 const closeBookingModal = () => {
     isBookingModalOpen.value = false;
     selectedDate.value = null;
-    refreshCalendar();
-};
-
-const closeViewModal = () => {
-    isViewModalOpen.value = false;
     selectedEvent.value = null;
-};
-
-const updateStatus = (status) => {
-    if (!selectedEvent.value) return;
-
-    // For 'completed', we now use the checkout flow
-    if (status === "completed") {
-        const routeName = props.isBarberView
-            ? "barber.appointments.update"
-            : "owner.appointments.update";
-        axios
-            .patch(route(routeName, selectedEvent.value.id), {
-                status: "completed",
-                payment_status: checkoutForm.value.payment_status,
-                total_price: checkoutForm.value.price_override,
-            })
-            .then(() => {
-                closeViewModal();
-                refreshCalendar();
-            })
-            .catch(() => {
-                alert(trans("error_updating_status", getLocale()));
-            });
-        return;
-    }
-
-    if (
-        !confirm(
-            trans("confirm_mark_as", getLocale()) +
-                trans(status, getLocale()) +
-                "?",
-        )
-    )
-        return;
-
-    const routeName = props.isBarberView
-        ? "barber.appointments.update"
-        : "owner.appointments.update";
-
-    axios
-        .patch(route(routeName, selectedEvent.value.id), {
-            status: status,
-        })
-        .then(() => {
-            closeViewModal();
-            refreshCalendar();
-        })
-        .catch(() => {
-            alert(trans("error_updating_status", getLocale()));
-        });
-};
-
-const deleteAppointment = () => {
-    if (!selectedEvent.value) return;
-    if (!confirm(trans("confirm_delete_appointment", getLocale()))) return;
-
-    const routeName = props.isBarberView
-        ? "barber.appointments.destroy"
-        : "owner.appointments.destroy";
-
-    axios
-        .delete(route(routeName, selectedEvent.value.id))
-        .then(() => {
-            closeViewModal();
-            refreshCalendar();
-        })
-        .catch((error) => {
-            alert(
-                trans("error_deleting_appointment", getLocale()) +
-                    (error.response?.data?.message || ""),
-            );
-        });
-};
-
-const handleEditClick = () => {
-    isBookingModalOpen.value = true;
-    closeViewModal();
+    refreshCalendar();
 };
 
 const formatCurrency = (value) => {
@@ -293,13 +203,7 @@ const handleEventClick = (clickInfo) => {
         end: clickInfo.event.end,
         extendedProps: clickInfo.event.extendedProps,
     };
-    checkoutForm.value.price_override =
-        clickInfo.event.extendedProps.total_price;
-    checkoutForm.value.payment_status =
-        clickInfo.event.extendedProps.payment_status === "unpaid"
-            ? "paid"
-            : clickInfo.event.extendedProps.payment_status || "paid";
-    isViewModalOpen.value = true;
+    isBookingModalOpen.value = true;
 };
 
 const handleEventDrop = (info) => {
@@ -698,318 +602,6 @@ defineExpose({ refreshCalendar });
             </div>
         </div>
 
-        <!-- View Details Modal -->
-        <Modal :show="isViewModalOpen" @close="closeViewModal">
-            <div class="p-8">
-                <div class="flex items-center justify-between mb-8">
-                    <h3
-                        class="text-2xl font-black text-slate-900 dark:text-white items-center flex gap-3"
-                    >
-                        <div
-                            class="p-2 rounded-xl bg-indigo-500/10 text-indigo-600"
-                        >
-                            <svg
-                                class="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                />
-                            </svg>
-                        </div>
-                        {{ __("appointment_details") }}
-                    </h3>
-                    <button
-                        @click="closeViewModal"
-                        class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
-                    >
-                        <svg
-                            class="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
-                </div>
-
-                <div v-if="selectedEvent" class="space-y-6">
-                    <div class="grid grid-cols-2 gap-6">
-                        <div
-                            class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
-                        >
-                            <p
-                                class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1"
-                            >
-                                {{ __("barber") }}
-                            </p>
-                            <p
-                                class="text-sm font-bold text-slate-900 dark:text-white"
-                            >
-                                {{ selectedEvent.extendedProps.barber_name }}
-                            </p>
-                        </div>
-                        <div
-                            class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
-                        >
-                            <p
-                                class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1"
-                            >
-                                {{ __("customer") }}
-                            </p>
-                            <p
-                                class="text-sm font-bold text-slate-900 dark:text-white"
-                            >
-                                {{ selectedEvent.extendedProps.customer_name }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div
-                        class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
-                    >
-                        <p
-                            class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1"
-                        >
-                            {{ __("services") }}
-                        </p>
-                        <p
-                            class="text-sm font-bold text-slate-900 dark:text-white"
-                        >
-                            {{
-                                Array.isArray(
-                                    selectedEvent.extendedProps.services,
-                                )
-                                    ? selectedEvent.extendedProps.services
-                                          .map((s) => s.name)
-                                          .join(", ")
-                                    : selectedEvent.extendedProps.services
-                            }}
-                        </p>
-                    </div>
-
-                    <div class="flex items-center gap-6">
-                        <div
-                            class="flex-1 p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20"
-                        >
-                            <p
-                                class="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-1"
-                            >
-                                {{ __("scheduled_time") }}
-                            </p>
-                            <p
-                                class="text-sm font-black text-indigo-700 dark:text-indigo-400"
-                            >
-                                {{ formatSimpleTime(selectedEvent.start) }}
-                                -
-                                {{ formatSimpleTime(selectedEvent.end) }}
-                            </p>
-                            <p
-                                class="text-xs font-bold text-indigo-600/60 mt-0.5"
-                            >
-                                {{
-                                    new Date(
-                                        selectedEvent.start,
-                                    ).toLocaleDateString(undefined, {
-                                        weekday: "long",
-                                        month: "long",
-                                        day: "numeric",
-                                    })
-                                }}
-                            </p>
-                        </div>
-                        <div
-                            class="p-4 px-6 rounded-2xl bg-slate-900 dark:bg-indigo-600 text-center"
-                        >
-                            <p
-                                class="text-[10px] font-black uppercase tracking-widest text-white/40 dark:text-slate-900 mb-1"
-                            >
-                                {{ __("price_label") }}
-                            </p>
-                            <p
-                                class="text-xl font-black text-white dark:text-slate-900"
-                            >
-                                {{
-                                    formatCurrency(
-                                        selectedEvent.extendedProps.total_price,
-                                    )
-                                }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Payment Status Info -->
-                    <div
-                        class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-between"
-                    >
-                        <div class="flex flex-col">
-                            <p
-                                class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1"
-                            >
-                                {{ __("payment_status") }}
-                            </p>
-                            <span
-                                :class="[
-                                    'text-sm font-black uppercase tracking-widest',
-                                    selectedEvent.extendedProps
-                                        .payment_status === 'paid'
-                                        ? 'text-emerald-500'
-                                        : selectedEvent.extendedProps
-                                                .payment_status === 'semi-paid'
-                                          ? 'text-amber-500'
-                                          : 'text-rose-500',
-                                ]"
-                            >
-                                {{
-                                    __(
-                                        selectedEvent.extendedProps
-                                            .payment_status,
-                                    )
-                                }}
-                            </span>
-                        </div>
-                        <div
-                            :class="[
-                                'px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border',
-                                selectedEvent.extendedProps.payment_status ===
-                                'paid'
-                                    ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-                                    : selectedEvent.extendedProps
-                                            .payment_status === 'semi-paid'
-                                      ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
-                                      : 'bg-rose-500/10 text-rose-600 border-rose-500/20',
-                            ]"
-                        >
-                            {{
-                                selectedEvent.extendedProps.payment_status ===
-                                "paid"
-                                    ? "✓ RÉGLÉ"
-                                    : "⚠ À PERCEVOIR"
-                            }}
-                        </div>
-                    </div>
-
-                    <!-- Checkout Flow (Visible for scheduled or completed but semi/unpaid) -->
-                    <div
-                        v-if="
-                            selectedEvent.extendedProps.status ===
-                                'scheduled' ||
-                            selectedEvent.extendedProps.status === 'completed'
-                        "
-                        class="p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-4"
-                    >
-                        <p
-                            class="text-[10px] font-black uppercase tracking-widest text-slate-400"
-                        >
-                            {{ __("complete_and_collect") }}
-                        </p>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label
-                                    class="text-[10px] font-bold text-slate-500 ml-1"
-                                    >{{ __("total_price") }}</label
-                                >
-                                <input
-                                    v-model="checkoutForm.price_override"
-                                    type="number"
-                                    step="0.01"
-                                    class="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-sm font-bold focus:ring-indigo-500 focus:border-indigo-500"
-                                />
-                            </div>
-                            <div class="space-y-1">
-                                <label
-                                    class="text-[10px] font-bold text-slate-500 ml-1"
-                                    >{{ __("payment_status") }}</label
-                                >
-                                <select
-                                    v-model="checkoutForm.payment_status"
-                                    class="w-full rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 text-sm font-bold focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                                    <option value="paid">
-                                        {{ __("paid") }}
-                                    </option>
-                                    <option value="semi-paid">
-                                        {{ __("semi_paid") }}
-                                    </option>
-                                    <option value="unpaid">
-                                        {{ __("unpaid") }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="selectedEvent.extendedProps.notes"
-                        class="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5"
-                    >
-                        <p
-                            class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1"
-                        >
-                            {{ __("notes") }}
-                        </p>
-                        <p class="text-sm font-medium text-slate-500 italic">
-                            {{ selectedEvent.extendedProps.notes }}
-                        </p>
-                    </div>
-
-                    <div
-                        class="mt-8 pt-8 border-t border-slate-100 dark:border-white/5 grid grid-cols-2 gap-3"
-                    >
-                        <PrimaryButton
-                            @click="updateStatus('completed')"
-                            class="col-span-2 !bg-emerald-600 hover:!bg-emerald-700 !rounded-2xl !py-4 shadow-lg shadow-emerald-500/20"
-                        >
-                            {{
-                                selectedEvent.extendedProps.status ===
-                                "completed"
-                                    ? __("update_payment")
-                                    : __("finish_and_collect")
-                            }}
-                        </PrimaryButton>
-                        <button
-                            v-if="
-                                selectedEvent.extendedProps.status ===
-                                'scheduled'
-                            "
-                            @click="handleEditClick"
-                            class="px-6 py-4 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 font-bold text-sm hover:bg-indigo-100 transition-colors"
-                        >
-                            {{ __("edit") }}
-                        </button>
-                        <button
-                            @click="deleteAppointment"
-                            class="px-6 py-4 rounded-2xl bg-red-50 dark:bg-red-500/10 text-red-600 font-bold text-sm hover:bg-red-100 transition-colors"
-                            :class="
-                                selectedEvent.extendedProps.status !==
-                                'scheduled'
-                                    ? 'col-span-2'
-                                    : ''
-                            "
-                        >
-                            {{ __("delete") }}
-                        </button>
-                        <SecondaryButton
-                            @click="closeViewModal"
-                            class="col-span-2 !rounded-2xl"
-                            >{{ __("close") }}</SecondaryButton
-                        >
-                    </div>
-                </div>
-            </div>
-        </Modal>
-
         <!-- Booking Modal -->
         <BookingModal
             :show="isBookingModalOpen"
@@ -1017,6 +609,7 @@ defineExpose({ refreshCalendar });
             :barbers="barbers"
             :initial-date="selectedDate"
             :initial-appointment="selectedEvent"
+            :initial-barber-id="selectedBarberId"
             :is-barber-view="isBarberView"
             @close="closeBookingModal"
             @appointment-created="refreshCalendar"

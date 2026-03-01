@@ -12,32 +12,33 @@ class AppointmentService
 {
     public function createAppointment($data, $creatorShopId)
     {
-        // 1. Handle Customer
-        $customerId = $data['customer_id'] ?? null;
-        if (!$customerId && !empty($data['new_customer_name'])) {
-            $customer = Customer::create([
-                'shop_id' => $creatorShopId,
-                'name' => $data['new_customer_name'],
-                'phone' => $data['new_customer_phone'] ?? null,
-            ]);
-            $customerId = $customer->id;
-        }
-
-        // 2. Calculate End Time and Total Price
+        // 1. Calculate End Time and Total Price
         $startTime = Carbon::parse($data['start_time']);
         $services = Service::whereIn('id', $data['service_ids'])->get();
-        $totalDuration = (int) $services->sum('duration_minutes');
-        $totalPrice = $services->sum('price');
+        $totalDuration = isset($data['total_duration']) ? (int) $data['total_duration'] : (int) $services->sum('duration_minutes');
+        $totalPrice = isset($data['total_price']) ? $data['total_price'] : $services->sum('price');
         $endTime = $startTime->copy()->addMinutes($totalDuration);
         $barberId = $data['barber_id'];
 
-        // 3. Double Booking Check
+        // 2. Double Booking Check BEFORE doing any DB changes
         if ($this->hasConflicts($barberId, $startTime, $endTime)) {
             throw new \Exception('This time slot is already booked for the selected barber.');
         }
 
-        // 4. Create Appointment
-        return DB::transaction(function () use ($creatorShopId, $barberId, $customerId, $startTime, $endTime, $totalPrice, $services) {
+        // 3. Create Customer and Appointment in a Transaction
+        return DB::transaction(function () use ($data, $creatorShopId, $barberId, $startTime, $endTime, $totalPrice, $services) {
+            
+            // Handle Customer Creation inside transaction
+            $customerId = $data['customer_id'] ?? null;
+            if (!$customerId && !empty($data['new_customer_name'])) {
+                $customer = Customer::create([
+                    'shop_id' => $creatorShopId,
+                    'name' => $data['new_customer_name'],
+                    'phone' => $data['new_customer_phone'] ?? null,
+                ]);
+                $customerId = $customer->id;
+            }
+
             $appointment = Appointment::create([
                 'shop_id' => $creatorShopId,
                 'barber_id' => $barberId,
@@ -48,7 +49,7 @@ class AppointmentService
                 'total_price' => $totalPrice,
             ]);
 
-            // 5. Attach Services
+            // Attach Services
             foreach ($services as $service) {
                 $appointment->services()->attach($service->id, ['price_at_time' => $service->price]);
             }
@@ -81,13 +82,28 @@ class AppointmentService
             $updateData = [];
             if (isset($data['barber_id'])) $updateData['barber_id'] = $data['barber_id'];
             if (isset($data['notes'])) $updateData['notes'] = $data['notes'];
+            if (isset($data['status'])) $updateData['status'] = $data['status'];
+            if (isset($data['payment_status'])) $updateData['payment_status'] = $data['payment_status'];
+
+            // Handle start time & duration (end_time) changes
             if (isset($data['start_time'])) {
                 $updateData['start_time'] = Carbon::parse($data['start_time']);
-                // If duration is known, update end_time too
-                if ($appointment->services()->exists()) {
-                    $totalDuration = (int) $appointment->services()->sum('duration_minutes');
-                    $updateData['end_time'] = Carbon::parse($data['start_time'])->addMinutes($totalDuration);
+                
+                $totalDuration = isset($data['total_duration']) ? (int) $data['total_duration'] : null;
+                if ($totalDuration === null) {
+                     // fallback to services duration if start_time changed without duration
+                     if (isset($data['service_ids'])) {
+                         $totalDuration = (int) Service::whereIn('id', $data['service_ids'])->sum('duration_minutes');
+                     } elseif ($appointment->services()->exists()) {
+                         $totalDuration = (int) $appointment->services()->sum('duration_minutes');
+                     } else {
+                         // Fallback to existing duration
+                         $totalDuration = $appointment->start_time->diffInMinutes($appointment->end_time);
+                     }
                 }
+                $updateData['end_time'] = Carbon::parse($data['start_time'])->addMinutes($totalDuration);
+            } elseif (isset($data['total_duration'])) {
+                $updateData['end_time'] = Carbon::parse($appointment->start_time)->addMinutes((int) $data['total_duration']);
             }
 
             if (!empty($updateData)) {

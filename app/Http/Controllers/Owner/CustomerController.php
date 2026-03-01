@@ -20,14 +20,7 @@ class CustomerController extends Controller
             });
         }
 
-        if ($request->filled('start_date')) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
 
-        if ($request->filled('end_date')) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
- 
         if ($request->wantsJson()) {
             return response()->json($query->latest()->take(10)->get());
         }
@@ -36,7 +29,7 @@ class CustomerController extends Controller
         
         return \Inertia\Inertia::render('Owner/Customers/Index', [
             'customers' => $customers,
-            'filters' => $request->only(['search', 'start_date', 'end_date'])
+            'filters' => $request->only(['search'])
         ]);
     }
 

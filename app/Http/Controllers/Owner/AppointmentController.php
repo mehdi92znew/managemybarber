@@ -135,7 +135,7 @@ class AppointmentController extends Controller
                 return response()->json(['message' => 'Appointment moved successfully.']);
             }
 
-            if ($request->has('status')) {
+            if ($request->has('status') && !$request->has('start_time')) {
                 $this->appointmentService->updateStatus(
                     $appointment, 
                     $request->status, 
