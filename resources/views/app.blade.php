@@ -15,6 +15,13 @@
 
         <script>
             window.stripe_key = "{{ config('services.stripe.key') }}";
+            
+            // Initialization for Dark Mode to prevent FOUC
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         </script>
         <!-- Scripts -->
         @routes
