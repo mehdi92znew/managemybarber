@@ -33,6 +33,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'is_impersonating' => session()->has('impersonator_id'),
             ],
             'locale' => app()->getLocale(),
         ];

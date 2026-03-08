@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\User;
 use Illuminate\Http\Request;
-
 use Inertia\Inertia;
 use App\Models\Customer;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +29,11 @@ class OwnerDashboardController extends Controller
         // 2. Metrics for Current Period
         $currentStats = $this->getStats($shopId, $startDate, $endDate);
         $prevStats = $this->getStats($shopId, $prevStartDate, $prevEndDate);
+
+        // Immediate snapshot metrics (independent of filters)
+        $todayRevenue = Appointment::where('shop_id', '=', $shopId)->where('status', '=', 'completed')->whereDate('start_time', today())->sum('total_price');
+        $weekRevenue = Appointment::where('shop_id', '=', $shopId)->where('status', '=', 'completed')->whereBetween('start_time', [now()->startOfWeek(), now()->endOfWeek()])->sum('total_price');
+        $todayAppointments = Appointment::where('shop_id', '=', $shopId)->whereDate('start_time', today())->count();
 
         // 3. Charts Data
         // Revenue Trend (Daily or Monthly depending on range)
@@ -79,6 +83,11 @@ class OwnerDashboardController extends Controller
         return Inertia::render('Owner/Dashboard', [
             'stats' => $currentStats,
             'prevStats' => $prevStats,
+            'snapshot' => [
+                'todayRevenue' => (float)$todayRevenue,
+                'weekRevenue' => (float)$weekRevenue,
+                'todayAppointments' => $todayAppointments,
+            ],
             'charts' => [
                 'revenueTrend' => $revenueTrend,
                 'serviceBreakdown' => $serviceBreakdown,

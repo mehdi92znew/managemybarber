@@ -6,30 +6,20 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createApp, h } from "vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import { translations } from "./lang";
+import { usePage } from "@inertiajs/vue3";
+
+import { __ } from "./translate";
 
 const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 const translatePlugin = {
     install(app) {
-        app.config.globalProperties.__ = function(key) {
-            let locale = 'en';
-            if (this.$page && this.$page.props && this.$page.props.locale) {
-                locale = this.$page.props.locale;
-            } else if (document.documentElement.lang) {
-                locale = document.documentElement.lang;
-            }
-            
-            // Handle 'fr-FR' style logic if needed, but our lang.js uses 'en', 'fr'
-            if (locale.includes('-')) {
-                locale = locale.split('-')[0];
-            }
-
-            return translations[locale]?.[key] || key;
-        }
-    }
+        app.config.globalProperties.__ = __;
+        app.provide("__", __);
+    },
 };
 
-const appElement = document.getElementById('app');
+const appElement = document.getElementById("app");
 
 if (appElement) {
     createInertiaApp({
@@ -40,11 +30,12 @@ if (appElement) {
                 import.meta.glob("./Pages/**/*.vue"),
             ),
         setup({ el, App, props, plugin }) {
-            return createApp({ render: () => h(App, props) })
+            const app = createApp({ render: () => h(App, props) })
                 .use(plugin)
                 .use(ZiggyVue)
-                .use(translatePlugin)
-                .mount(el);
+                .use(translatePlugin);
+
+            return app.mount(el);
         },
         progress: {
             color: "#4B5563",

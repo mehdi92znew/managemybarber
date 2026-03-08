@@ -435,12 +435,14 @@ const formatSimpleTime = (dateStr) => {
                             <div
                                 class="flex flex-col h-full text-white leading-none"
                             >
-                                <span
-                                    class="text-[8px] font-black uppercase truncate mb-0.5"
-                                    >{{
+                                <div class="flex items-start justify-between gap-1 w-full">
+                                    <span class="text-[8px] font-black uppercase truncate mb-0.5">{{
                                         appt.extendedProps.customer_name
-                                    }}</span
-                                >
+                                    }}</span>
+                                    <div v-if="appt.extendedProps.status === 'completed' && appt.extendedProps.payment_status !== 'paid'" class="shrink-0 flex items-center justify-center w-3 h-3 rounded-md bg-white text-rose-600 shadow-sm animate-pulse">
+                                        <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                    </div>
+                                </div>
                                 <span
                                     class="text-[7px] font-bold opacity-80 leading-none truncate block"
                                 >
@@ -450,6 +452,12 @@ const formatSimpleTime = (dateStr) => {
                                             .join(", ")
                                     }}
                                 </span>
+                                <div class="mt-auto pt-1 flex items-center justify-between">
+                                    <span class="text-[7px] font-black px-1 rounded bg-black/10">{{ formatCurrency(appt.extendedProps.total_price) }}</span>
+                                    <div v-if="appt.extendedProps.status === 'completed'" class="p-0.5 rounded-full bg-white/20">
+                                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -538,23 +546,25 @@ const formatSimpleTime = (dateStr) => {
                                 <div
                                     class="flex items-center justify-between gap-2 overflow-hidden"
                                 >
-                                    <span
-                                        class="text-[9px] font-black uppercase truncate"
-                                        >{{
+                                    <div class="flex items-center gap-1 min-w-0">
+                                        <span class="text-[9px] font-black uppercase truncate">{{
                                             appt.extendedProps.customer_name
-                                        }}</span
-                                    >
-                                    <span
-                                        class="text-[8px] font-black px-1 rounded bg-black/10 shrink-0"
-                                        >{{
-                                            formatCurrency(
-                                                appt.extendedProps.total_price,
-                                            )
-                                        }}</span
-                                    >
+                                        }}</span>
+                                        <div v-if="appt.extendedProps.status === 'completed' && appt.extendedProps.payment_status !== 'paid'" class="shrink-0 flex items-center justify-center w-3 h-3 rounded-md bg-white text-rose-600 shadow-sm animate-pulse">
+                                            <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1 shrink-0">
+                                        <span class="text-[8px] font-black px-1 rounded bg-black/10">{{
+                                            formatCurrency(appt.extendedProps.total_price)
+                                        }}</span>
+                                        <div v-if="appt.extendedProps.status === 'completed'" class="p-0.5 rounded-full bg-white/20">
+                                            <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
+                                        </div>
+                                    </div>
                                 </div>
                                 <span
-                                    class="text-[7px] font-bold opacity-80 truncate block leading-tight"
+                                    class="text-[7px] font-bold opacity-80 truncate block leading-tight mt-0.5"
                                 >
                                     {{
                                         appt.extendedProps.services
@@ -595,7 +605,7 @@ const formatSimpleTime = (dateStr) => {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="postcss">
 .min-w-max {
     min-width: max-content;
 }

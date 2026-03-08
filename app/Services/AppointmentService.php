@@ -20,14 +20,14 @@ class AppointmentService
         $endTime = $startTime->copy()->addMinutes($totalDuration);
         $barberId = $data['barber_id'];
 
-        // 2. Double Booking Check BEFORE doing any DB changes
-        if ($this->hasConflicts($barberId, $startTime, $endTime)) {
-            throw new \Exception('This time slot is already booked for the selected barber.');
-        }
-
-        // 3. Create Customer and Appointment in a Transaction
+        // 2. Create Customer and Appointment in a Transaction
         return DB::transaction(function () use ($data, $creatorShopId, $barberId, $startTime, $endTime, $totalPrice, $services) {
             
+            // Double Booking Check inside transaction to minimize race condition
+            if ($this->hasConflicts($barberId, $startTime, $endTime)) {
+                throw new \Exception('This time slot is already booked for the selected barber.');
+            }
+
             // Handle Customer Creation inside transaction
             $customerId = $data['customer_id'] ?? null;
             if (!$customerId && !empty($data['new_customer_name'])) {
@@ -106,6 +106,18 @@ class AppointmentService
                 $updateData['end_time'] = Carbon::parse($appointment->start_time)->addMinutes((int) $data['total_duration']);
             }
 
+            // Conflict Check for Updates
+            $chkBarberId = $updateData['barber_id'] ?? $appointment->barber_id;
+            $chkStartTime = $updateData['start_time'] ?? $appointment->start_time;
+            $chkEndTime = $updateData['end_time'] ?? $appointment->end_time;
+            $chkStatus = $updateData['status'] ?? $appointment->status;
+
+            if ($chkStatus !== 'cancelled') {
+                if ($this->hasConflicts($chkBarberId, $chkStartTime, $chkEndTime, $appointment->id)) {
+                    throw new \Exception('This time slot is already booked.');
+                }
+            }
+
             if (!empty($updateData)) {
                 $appointment->update($updateData);
             }
@@ -129,6 +141,16 @@ class AppointmentService
                 $appointment->update(['total_price' => $data['total_price']]);
             }
 
+            // Recalculate commission if the appointment is completed. 
+            // If it was completed and is changed to scheduled, remove commission.
+            $appointment->refresh();
+            if ($appointment->status === 'completed') {
+                $commissionService = new CommissionService();
+                $commissionService->calculateAndRecord($appointment);
+            } else {
+                $appointment->update(['commission_amount' => 0]);
+            }
+
             return $appointment;
         });
     }
@@ -140,6 +162,7 @@ class AppointmentService
         if ($totalPrice !== null) $data['total_price'] = $totalPrice;
 
         $appointment->update($data);
+        $appointment->refresh();
 
         if ($status === 'completed') {
             $commissionService = new CommissionService();
@@ -148,6 +171,8 @@ class AppointmentService
             if ($paymentStatus === 'paid' || $paymentStatus === 'semi-paid') {
                 $commissionService->recordPayment($appointment, 'cash', $paymentStatus); 
             }
+        } else {
+            $appointment->update(['commission_amount' => 0]);
         }
 
         return $appointment;
@@ -158,12 +183,8 @@ class AppointmentService
         $query = Appointment::where('barber_id', $barberId)
             ->where('status', '!=', 'cancelled')
             ->where(function ($q) use ($startTime, $endTime) {
-                $q->whereBetween('start_time', [$startTime, $endTime])
-                  ->orWhereBetween('end_time', [$startTime, $endTime])
-                  ->orWhere(function ($sub) use ($startTime, $endTime) {
-                      $sub->where('start_time', '<', $startTime)
-                          ->where('end_time', '>', $endTime);
-                  });
+                $q->where('start_time', '<', $endTime)
+                  ->where('end_time', '>', $startTime);
             });
 
         if ($excludeAppointmentId) {

@@ -39,7 +39,7 @@ class RegisteredUserController extends Controller
 
         $shop = \App\Models\Shop::create([
             'name' => $request->shop_name,
-            'subscription_status' => 'trial',
+            'subscription_status' => 'pending',
             'subscription_ends_at' => now()->addDays(14),
         ]);
 
@@ -50,6 +50,14 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'owner',
             'is_active' => true,
+        ]);
+
+        \App\Models\ActivityLog::create([
+            'shop_id' => $shop->id,
+            'user_id' => $user->id,
+            'action' => 'shop_registration',
+            'description' => "Shop '{$shop->name}' registered and is awaiting approval.",
+            'ip_address' => $request->ip(),
         ]);
 
         $user->assignRole('owner');

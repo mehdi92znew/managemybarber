@@ -27,49 +27,82 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Super Admin Routes
-Route::prefix('admin')->middleware(['auth', 'role:super_admin'])->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('admin.dashboard');
+Route::middleware(['auth', 'role:super_admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    // Shops Management
     Route::resource('shops', \App\Http\Controllers\Admin\AdminShopController::class);
-    Route::patch('/shops/{shop}/suspend', [\App\Http\Controllers\Admin\AdminShopController::class, 'suspend'])->name('admin.shops.suspend');
-    Route::patch('/shops/{shop}/activate', [\App\Http\Controllers\Admin\AdminShopController::class, 'activate'])->name('admin.shops.activate');
+    Route::patch('/shops/{shop}/approve', [\App\Http\Controllers\Admin\AdminShopController::class, 'approve'])->name('shops.approve');
+    Route::patch('/shops/{shop}/suspend', [\App\Http\Controllers\Admin\AdminShopController::class, 'suspend'])->name('shops.suspend');
+    Route::patch('/shops/{shop}/activate', [\App\Http\Controllers\Admin\AdminShopController::class, 'activate'])->name('shops.activate');
+    Route::patch('/shops/{shop}/subscription', [\App\Http\Controllers\Admin\AdminShopController::class, 'updateSubscription'])->name('shops.subscription.update');
+    Route::post('/shops/{shop}/impersonate', [\App\Http\Controllers\Admin\AdminShopController::class, 'impersonate'])->name('shops.impersonate');
+
+    // Users Management
+    Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}/toggle', [\App\Http\Controllers\Admin\AdminUserController::class, 'toggleBlock'])->name('users.toggle');
+    
+    Route::get('/logs', [\App\Http\Controllers\Admin\AdminLogController::class, 'index'])->name('logs.index');
+    
+    // Platform Settings
+    Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');
+    Route::patch('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'update'])->name('settings.update');
 });
 
+Route::post('/admin/leave-impersonation', [\App\Http\Controllers\Admin\AdminShopController::class, 'leaveImpersonation'])
+    ->middleware('auth')
+    ->name('admin.impersonate.leave');
+
 // Shop Owner Routes
-Route::prefix('owner')->middleware(['auth', 'role:owner', 'shop.active'])->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Owner\OwnerDashboardController::class, 'index'])->name('owner.dashboard');
-    Route::resource('barbers', \App\Http\Controllers\Owner\BarberController::class, ['as' => 'owner']);
-    Route::resource('services', \App\Http\Controllers\Owner\ServiceController::class, ['as' => 'owner']);
-    Route::resource('customers', \App\Http\Controllers\Owner\CustomerController::class, ['as' => 'owner']);
-    Route::resource('bills', \App\Http\Controllers\Owner\BillController::class, ['as' => 'owner']);
-    Route::resource('barber-payouts', \App\Http\Controllers\Owner\BarberPayoutController::class, ['as' => 'owner']);
-    Route::get('/barber-report', [\App\Http\Controllers\Owner\BarberReportController::class, 'index'])->name('owner.barber-report');
+Route::middleware(['auth', 'role:owner', 'shop.active'])
+    ->prefix('owner')
+    ->name('owner.')
+    ->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Owner\OwnerDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('barbers', \App\Http\Controllers\Owner\BarberController::class);
+    Route::resource('services', \App\Http\Controllers\Owner\ServiceController::class);
+    Route::resource('customers', \App\Http\Controllers\Owner\CustomerController::class);
+    Route::resource('bills', \App\Http\Controllers\Owner\BillController::class);
+    Route::resource('barber-payouts', \App\Http\Controllers\Owner\BarberPayoutController::class);
+    Route::get('/barber-report', [\App\Http\Controllers\Owner\BarberReportController::class, 'index'])->name('barber-report');
+    Route::resource('notes', \App\Http\Controllers\Owner\NoteController::class);
     
     // Calendar & Appointments
-    Route::get('/calendar', [\App\Http\Controllers\Owner\AppointmentController::class, 'index'])->name('owner.calendar');
-    Route::get('/calendar/daily', [\App\Http\Controllers\Owner\AppointmentController::class, 'daily'])->name('owner.calendar.daily');
-    Route::get('/appointments/list', [\App\Http\Controllers\Owner\AppointmentController::class, 'list'])->name('owner.appointments.list');
-    Route::get('/appointments/events', [\App\Http\Controllers\Owner\AppointmentController::class, 'events'])->name('owner.appointments.events');
-    Route::post('/appointments', [\App\Http\Controllers\Owner\AppointmentController::class, 'store'])->name('owner.appointments.store');
-    Route::patch('/appointments/{appointment}', [\App\Http\Controllers\Owner\AppointmentController::class, 'update'])->name('owner.appointments.update');
-    Route::delete('/appointments/{appointment}', [\App\Http\Controllers\Owner\AppointmentController::class, 'destroy'])->name('owner.appointments.destroy');
+    Route::get('/calendar', [\App\Http\Controllers\Owner\AppointmentController::class, 'index'])->name('calendar');
+    Route::get('/calendar/daily', [\App\Http\Controllers\Owner\AppointmentController::class, 'daily'])->name('calendar.daily');
+    Route::get('/appointments/list', [\App\Http\Controllers\Owner\AppointmentController::class, 'list'])->name('appointments.list');
+    Route::get('/appointments/events', [\App\Http\Controllers\Owner\AppointmentController::class, 'events'])->name('appointments.events');
+    Route::post('/appointments', [\App\Http\Controllers\Owner\AppointmentController::class, 'store'])->name('appointments.store');
+    Route::patch('/appointments/{appointment}', [\App\Http\Controllers\Owner\AppointmentController::class, 'update'])->name('appointments.update');
+    Route::delete('/appointments/{appointment}', [\App\Http\Controllers\Owner\AppointmentController::class, 'destroy'])->name('appointments.destroy');
 });
 
 // Barber Routes
-Route::prefix('barber')->middleware(['auth', 'role:barber', 'shop.active'])->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Barber\BarberDashboardController::class, 'index'])->name('barber.dashboard');
+Route::middleware(['auth', 'role:barber', 'shop.active'])
+    ->prefix('barber')
+    ->name('barber.')
+    ->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Barber\BarberDashboardController::class, 'index'])->name('dashboard');
     
     // Calendar
-    Route::get('/calendar', [\App\Http\Controllers\Barber\AppointmentController::class, 'index'])->name('barber.calendar');
-    Route::get('/appointments/events', [\App\Http\Controllers\Barber\AppointmentController::class, 'events'])->name('barber.appointments.events');
-    Route::post('/appointments', [\App\Http\Controllers\Barber\AppointmentController::class, 'store'])->name('barber.appointments.store');
-    Route::patch('/appointments/{appointment}', [\App\Http\Controllers\Barber\AppointmentController::class, 'update'])->name('barber.appointments.update');
-    Route::delete('/appointments/{appointment}', [\App\Http\Controllers\Barber\AppointmentController::class, 'destroy'])->name('barber.appointments.destroy');
+    Route::get('/calendar', [\App\Http\Controllers\Barber\AppointmentController::class, 'index'])->name('calendar');
+    Route::get('/appointments/list', [\App\Http\Controllers\Barber\AppointmentController::class, 'list'])->name('appointments.list');
+    Route::get('/appointments/events', [\App\Http\Controllers\Barber\AppointmentController::class, 'events'])->name('appointments.events');
+    Route::post('/appointments', [\App\Http\Controllers\Barber\AppointmentController::class, 'store'])->name('appointments.store');
+    Route::patch('/appointments/{appointment}', [\App\Http\Controllers\Barber\AppointmentController::class, 'update'])->name('appointments.update');
+    Route::delete('/appointments/{appointment}', [\App\Http\Controllers\Barber\AppointmentController::class, 'destroy'])->name('appointments.destroy');
     
     // Customers
-    Route::resource('customers', \App\Http\Controllers\Owner\CustomerController::class, ['as' => 'barber']);
+    Route::resource('customers', \App\Http\Controllers\Owner\CustomerController::class);
+
+    // Notes
+    Route::get('/notes', [\App\Http\Controllers\Barber\NoteController::class, 'index'])->name('notes.index');
 
     // Payouts
-    Route::get('/payouts', [\App\Http\Controllers\Barber\BarberPayoutController::class, 'index'])->name('barber.payouts.index');
+    Route::get('/payouts', [\App\Http\Controllers\Barber\BarberPayoutController::class, 'index'])->name('payouts.index');
 });
 
 Route::post('/payments/create-intent', [\App\Http\Controllers\PaymentController::class, 'createIntent'])->name('payments.create-intent')->middleware(['auth', 'verified']);

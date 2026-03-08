@@ -392,15 +392,17 @@ defineExpose({ refreshCalendar });
             <div
                 class="flex items-center gap-1 p-1 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 w-full xl:w-auto overflow-x-auto no-scrollbar order-last xl:order-first"
             >
-                <Link
-                    :href="route('owner.calendar.daily')"
-                    class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap text-amber-500 hover:bg-amber-500/10 mr-2 border border-amber-500/20"
-                >
-                    {{ __("daily_planning") }}
-                </Link>
-                <div
-                    class="h-6 w-px bg-slate-200 dark:bg-white/10 mx-2 hidden sm:block"
-                ></div>
+                <template v-if="!isBarberView">
+                    <Link
+                        :href="route('owner.calendar.daily')"
+                        class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap text-amber-500 hover:bg-amber-500/10 mr-2 border border-amber-500/20"
+                    >
+                        {{ __("daily_planning") }}
+                    </Link>
+                    <div
+                        class="h-6 w-px bg-slate-200 dark:bg-white/10 mx-2 hidden sm:block"
+                    ></div>
+                </template>
                 <button
                     @click="changeView('timeGridWeek')"
                     class="flex-1 xl:flex-none px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap"

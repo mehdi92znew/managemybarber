@@ -53,6 +53,21 @@ const navigation = computed(() => {
             route: "admin.shops.index",
             icon: "BuildingStorefrontIcon",
         });
+        links.push({
+            name: trans("users", currentLocale.value),
+            route: "admin.users.index",
+            icon: "UsersIcon",
+        });
+        links.push({
+            name: trans("history_logs", currentLocale.value),
+            route: "admin.logs.index",
+            icon: "DocumentTextIcon",
+        });
+        links.push({
+            name: trans("settings", currentLocale.value),
+            route: "admin.settings.index",
+            icon: "Cog6ToothIcon",
+        });
     } else if (role === "owner") {
         links.push({
             name: trans("dashboard", currentLocale.value),
@@ -78,6 +93,11 @@ const navigation = computed(() => {
             name: trans("customers", currentLocale.value),
             route: "owner.customers.index",
             icon: "UsersIcon",
+        });
+        links.push({
+            name: trans("notes", currentLocale.value),
+            route: "owner.notes.index",
+            icon: "DocumentTextIcon",
         });
         links.push({
             name: trans("services", currentLocale.value),
@@ -111,6 +131,11 @@ const navigation = computed(() => {
             icon: "HomeIcon",
         });
         links.push({
+            name: trans("appointments", currentLocale.value),
+            route: "barber.appointments.list",
+            icon: "CalendarIcon",
+        });
+        links.push({
             name: trans("calendar", currentLocale.value),
             route: "barber.calendar",
             icon: "CalendarIcon",
@@ -119,6 +144,11 @@ const navigation = computed(() => {
             name: trans("payouts", currentLocale.value),
             route: "barber.payouts.index",
             icon: "WalletIcon",
+        });
+        links.push({
+            name: trans("notes", currentLocale.value),
+            route: "barber.notes.index",
+            icon: "DocumentTextIcon",
         });
     }
 
@@ -134,6 +164,17 @@ const isRouteActive = (routeName) => {
     <div
         class="min-h-screen bg-slate-50 dark:bg-slate-950 flex selection:bg-amber-100 selection:text-amber-900"
     >
+        <!-- Impersonation Banner -->
+        <div v-if="page.props.auth.is_impersonating" class="fixed top-0 left-0 right-0 z-[100] bg-red-600 text-white px-4 py-2 flex items-center justify-between shadow-2xl">
+            <div class="flex items-center gap-3">
+                <span class="animate-pulse">⚠️</span>
+                <span class="text-xs font-bold uppercase tracking-widest">Avertissement: Vous agissez en tant que {{ user.name }}</span>
+            </div>
+            <Link :href="route('admin.impersonate.leave')" method="post" as="button" class="px-4 py-1 bg-white text-red-600 rounded-lg text-xs font-black uppercase hover:bg-slate-100 transition-colors">
+                {{ trans('leave_impersonation', currentLocale) }}
+            </Link>
+        </div>
+
         <!-- Mobile Sidebar Overlay -->
         <div
             v-if="sidebarOpen"
@@ -152,25 +193,25 @@ const isRouteActive = (routeName) => {
         >
             <!-- Logo Section -->
             <div
-                class="flex items-center justify-between h-20 px-6 border-b border-white/5 overflow-hidden"
+                class="flex items-center justify-between h-24 px-8 border-b border-white/5 overflow-hidden"
             >
                 <Link
                     :href="route('dashboard')"
-                    class="flex items-center gap-3 active:scale-95 transition-transform duration-200 shrink-0"
+                    class="flex items-center gap-4 active:scale-95 transition-transform duration-300 shrink-0"
                 >
                     <ApplicationLogo
-                        class="w-10 h-10 shadow-lg shadow-amber-500/20 rounded-xl"
+                        class="w-12 h-12 shadow-[0_0_30px_rgba(245,158,11,0.3)] rounded-2xl border-2 border-amber-500/20"
                     />
                     <span
                         v-if="!isCollapsed"
-                        class="text-xl font-black text-white tracking-tighter uppercase italic transition-all duration-300 whitespace-nowrap"
+                        class="text-2xl font-black text-white tracking-tighter uppercase italic transition-all duration-300 whitespace-nowrap"
                         >Barber<span class="text-amber-500">App</span></span
                     >
                 </Link>
                 <!-- Desktop Collapse Button -->
                 <button
                     @click="isCollapsed = !isCollapsed"
-                    class="hidden md:flex p-2 rounded-xl text-slate-500 hover:bg-white/5 hover:text-white transition-all transform"
+                    class="hidden md:flex p-2.5 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-amber-500 transition-all transform border border-transparent hover:border-white/10"
                     :class="isCollapsed ? 'rotate-180' : ''"
                 >
                     <svg
@@ -182,42 +223,23 @@ const isRouteActive = (routeName) => {
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            stroke-width="2"
+                            stroke-width="2.5"
                             d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
-                        />
-                    </svg>
-                </button>
-                <!-- Mobile Close Button -->
-                <button
-                    @click="sidebarOpen = false"
-                    class="md:hidden p-2 rounded-xl text-slate-400 hover:bg-white/5 transition-colors"
-                >
-                    <svg
-                        class="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
                         />
                     </svg>
                 </button>
             </div>
 
             <!-- Navigation Section -->
-            <div class="flex-1 overflow-y-auto py-6 px-4 space-y-8">
+            <div class="flex-1 overflow-y-auto py-8 px-6 space-y-10">
                 <div>
                     <p
                         v-if="!isCollapsed"
-                        class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] px-4 mb-4 whitespace-nowrap"
+                        class="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] px-5 mb-6 whitespace-nowrap italic opacity-80"
                     >
-                        {{ __("main_menu", currentLocale) }}
+                        {{ user.role === 'super_admin' ? 'PLATFORM GOVERNANCE' : __("main_menu", currentLocale) }}
                     </p>
-                    <nav class="space-y-1">
+                    <nav class="space-y-2">
                         <Link
                             v-for="item in navigation"
                             :key="item.name"
@@ -225,18 +247,18 @@ const isRouteActive = (routeName) => {
                             :title="isCollapsed ? item.name : ''"
                             :class="[
                                 isRouteActive(item.route)
-                                    ? 'bg-amber-500/10 text-amber-500 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]'
-                                    : 'text-slate-400 hover:bg-white/5 hover:text-white',
-                                'group flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 overflow-hidden',
+                                    ? 'bg-amber-500/10 text-amber-500 shadow-[inset_0_0_30px_rgba(245,158,11,0.1)] border-amber-500/20'
+                                    : 'text-slate-400 hover:bg-white/[0.03] hover:text-white border-transparent',
+                                'group flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest italic rounded-[1.25rem] transition-all duration-300 overflow-hidden border',
                             ]"
                         >
                             <div
                                 :class="[
-                                    'p-2 rounded-lg transition-colors duration-200',
-                                    isCollapsed ? 'mx-auto' : 'mr-3',
+                                    'p-2.5 rounded-xl transition-all duration-300',
+                                    isCollapsed ? 'mx-auto' : 'mr-4',
                                     isRouteActive(item.route)
-                                        ? 'bg-amber-500 text-slate-900'
-                                        : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700 group-hover:text-white',
+                                        ? 'bg-amber-500 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] rotate-3'
+                                        : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-amber-500',
                                 ]"
                             >
                                 <svg
@@ -333,10 +355,31 @@ const isRouteActive = (routeName) => {
                                         d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2m0 10V7"
                                     />
                                     <path
-                                        v-else
+                                        v-else-if="item.icon === 'DocumentTextIcon'"
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                         stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                    />
+                                    <path
+                                        v-else-if="item.icon === 'Cog6ToothIcon'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M4.5 12a7.5 7.5 0 0015 0 7.5 7.5 0 00-15 0zm15 0c0-1.105.895-2 2-2s2 .895 2 2-.895 2-2 2-2-.895-2-2zM4.5 12c0-1.105-.895-2-2-2s-2 .895-2 2 .895 2 2 2 2-.895 2-2zM12 4.5c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 19.5c1.105 0 2 .895 2 2s-.895 2-2 2-2-.895-2-2 .895-2 2-2zM17.303 6.697c.782-.782 2.05-.782 2.828 0s.782 2.05 0 2.828-2.05.782-2.828 0-.782-2.05 0-2.828zM3.869 17.303c.782-.782 2.05-.782 2.828 0s.782 2.05 0 2.828-2.05.782-2.828 0-.782-2.05 0-2.828zM17.303 17.303c.782.782.782 2.05 0 2.828s-2.05.782-2.828 0-.782-2.05 0-2.828 2.05-.782 2.828 0zM3.869 3.869c.782.782.782 2.05 0 2.828s-2.05.782-2.828 0-.782-2.05 0-2.828 2.05-.782 2.828 0z"
+                                    />
+                                    <path
+                                        v-else-if="item.icon === 'DocumentTextIcon'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                                    />
+                                    <path
+                                        v-else
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2.5"
                                         d="M4 6h16M4 12h16M4 18h16"
                                     />
                                 </svg>
@@ -352,13 +395,13 @@ const isRouteActive = (routeName) => {
             </div>
 
             <!-- Sidebar Footer -->
-            <div class="p-4 border-t border-white/5 overflow-hidden">
+            <div class="p-6 border-t border-white/5 overflow-hidden">
                 <div
-                    class="bg-slate-800/40 rounded-2xl p-4 flex items-center transition-all duration-300"
-                    :class="isCollapsed ? 'justify-center' : 'gap-3'"
+                    class="bg-white/5 rounded-[2rem] p-5 flex items-center transition-all duration-500 border border-white/5 hover:border-white/10 shadow-2xl"
+                    :class="isCollapsed ? 'justify-center p-2' : 'gap-4'"
                 >
                     <div
-                        class="h-10 w-10 shrink-0 rounded-full bg-amber-500 flex items-center justify-center text-slate-900 font-bold shadow-lg shadow-amber-500/20"
+                        class="h-12 w-12 shrink-0 rounded-2xl bg-amber-500 flex items-center justify-center text-slate-950 font-black shadow-[0_0_25px_rgba(245,158,11,0.3)] uppercase italic rotate-3"
                     >
                         {{ user.name.charAt(0) }}
                     </div>
@@ -366,11 +409,11 @@ const isRouteActive = (routeName) => {
                         v-if="!isCollapsed"
                         class="min-w-0 transition-all duration-300"
                     >
-                        <p class="text-sm font-bold text-white truncate">
-                            {{ user.name }}
+                        <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest italic mb-0.5 opacity-60">
+                            {{ user.role === 'super_admin' ? 'GENESIS CORE' : user.role }}
                         </p>
-                        <p class="text-[10px] text-slate-400 truncate">
-                            {{ user.email }}
+                        <p class="text-xs font-black text-white truncate uppercase italic tracking-tighter">
+                            {{ user.name }}
                         </p>
                     </div>
                 </div>

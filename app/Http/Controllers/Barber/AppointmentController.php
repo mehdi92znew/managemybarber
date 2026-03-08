@@ -21,7 +21,7 @@ class AppointmentController extends Controller
     public function index()
     {
         $barber = auth()->user();
-        $services = Service::where('shop_id', $barber->shop_id)->where('is_active', true)->get();
+        $services = Service::query()->where('shop_id', '=', $barber->shop_id)->where('is_active', '=', true)->get();
         return \Inertia\Inertia::render('Barber/Calendar', [
             'services' => $services
         ]);
@@ -32,8 +32,8 @@ class AppointmentController extends Controller
         $start = Carbon::parse($request->start);
         $end = Carbon::parse($request->end);
 
-        $appointments = Appointment::with(['customer', 'services'])
-            ->where('barber_id', auth()->id()) // Scoped to self
+        $appointments = Appointment::query()->with(['customer', 'services'])
+            ->where('barber_id', '=', auth()->id()) // Scoped to self
             ->whereBetween('start_time', [$start, $end])
             ->get();
 
@@ -122,5 +122,40 @@ class AppointmentController extends Controller
         $appointment->delete();
 
         return response()->json(['message' => 'Appointment deleted successfully.']);
+    }
+
+    public function list(Request $request)
+    {
+        $query = Appointment::query()->with(['customer', 'services'])
+            ->where('barber_id', '=', auth()->id());
+
+        if ($request->filled('start_date')) {
+            $query->whereDate('start_time', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('start_time', '<=', $request->end_date);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', '=', $request->status);
+        }
+
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', '=', $request->payment_status);
+        }
+
+        $appointments = $query->latest()->paginate(20)->withQueryString();
+        $services = Service::query()->where('shop_id', '=', auth()->user()->shop_id)->where('is_active', '=', true)->get(['id', 'name', 'price', 'duration_minutes']);
+        
+        // Only the logged in barber is sent
+        $barbers = [auth()->user()];
+        
+        return \Inertia\Inertia::render('Barber/Appointments/Index', [
+            'appointments' => $appointments,
+            'services' => $services,
+            'barbers' => $barbers,
+            'filters' => $request->only(['start_date', 'end_date', 'status', 'payment_status'])
+        ]);
     }
 }

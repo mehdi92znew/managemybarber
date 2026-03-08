@@ -55,6 +55,34 @@ class CustomerController extends Controller
         return back()->with('success', 'Customer created successfully.');
     }
 
+    public function show(Customer $customer)
+    {
+        if ($customer->shop_id !== auth()->user()->shop_id) {
+            abort(403);
+        }
+
+        $history = $customer->appointments()
+            ->with(['barber:id,name', 'services:id,name,price'])
+            ->latest('start_time')
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'date' => $appointment->start_time->format('Y-m-d H:i'),
+                    'barber_name' => $appointment->barber->name ?? '-',
+                    'status' => $appointment->status,
+                    'payment_status' => $appointment->payment_status,
+                    'total_price' => $appointment->total_price,
+                    'services' => $appointment->services->pluck('name')->implode(', ')
+                ];
+            });
+
+        return response()->json([
+            'customer' => $customer,
+            'history' => $history
+        ]);
+    }
+
     public function update(Request $request, Customer $customer)
     {
         if ($customer->shop_id !== auth()->user()->shop_id) {

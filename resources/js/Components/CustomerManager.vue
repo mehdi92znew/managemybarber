@@ -28,6 +28,11 @@ const isModalOpen = ref(false);
 const isEditing = ref(false);
 const editingCustomerId = ref(null);
 
+const isHistoryModalOpen = ref(false);
+const selectedHistoryCustomer = ref(null);
+const customerHistory = ref([]);
+const isLoadingHistory = ref(false);
+
 const filterForm = ref({
     search: props.filters?.search || "",
 });
@@ -62,6 +67,29 @@ const openEditModal = (customer) => {
     });
     formErrors.value = {};
     isModalOpen.value = true;
+};
+
+const openHistoryModal = (customer) => {
+    selectedHistoryCustomer.value = customer;
+    isHistoryModalOpen.value = true;
+    isLoadingHistory.value = true;
+    
+    axios.get(route(`${routePrefix.value}.customers.show`, customer.id))
+        .then(response => {
+            customerHistory.value = response.data.history;
+        })
+        .catch(error => {
+            alert("Failed to load history.");
+        })
+        .finally(() => {
+            isLoadingHistory.value = false;
+        });
+};
+
+const closeHistoryModal = () => {
+    isHistoryModalOpen.value = false;
+    selectedHistoryCustomer.value = null;
+    customerHistory.value = [];
 };
 
 const closeModal = () => {
@@ -230,196 +258,63 @@ const formatDate = (date) => {
             </div>
         </div>
 
-        <!-- Desktop Table View -->
-        <div
-            v-if="!isMobile"
-            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-[2rem] overflow-hidden premium-shadow"
-        >
-            <table
-                class="min-w-full divide-y divide-slate-100 dark:divide-white/5"
-            >
-                <thead class="bg-slate-50/50 dark:bg-black/20">
-                    <tr>
-                        <th
-                            class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
-                        >
-                            {{ __("name") }}
-                        </th>
-                        <th
-                            class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
-                        >
-                            {{ __("phone") }}
-                        </th>
-                        <th
-                            class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
-                        >
-                            {{ __("notes") }}
-                        </th>
-                        <th
-                            class="px-8 py-5 text-right text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
-                        >
-                            {{ __("actions") }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-white/5">
-                    <tr
-                        v-for="customer in customersList"
-                        :key="customer.id"
-                        class="group hover:bg-slate-50/80 dark:hover:bg-white/5 transition-all"
-                    >
-                        <td class="px-8 py-6">
-                            <div class="flex items-center gap-4">
-                                <div
-                                    class="h-10 w-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 font-bold text-sm"
-                                >
-                                    {{ customer.name.charAt(0) }}
-                                </div>
-                                <span
-                                    class="text-sm font-bold text-slate-900 dark:text-white"
-                                    >{{ customer.name }}</span
-                                >
-                            </div>
-                        </td>
-                        <td class="px-8 py-6">
-                            <span
-                                class="text-sm font-medium text-slate-500 dark:text-slate-400"
-                                >{{ customer.phone || "-" }}</span
-                            >
-                        </td>
-                        <td class="px-8 py-6">
-                            <span
-                                class="text-[10px] font-black text-slate-500 line-clamp-2"
-                            >
-                                {{ customer.notes || "-" }}
-                            </span>
-                        </td>
-                        <td class="px-8 py-6 text-right">
-                            <div
-                                class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                            >
-                                <button
-                                    @click="openEditModal(customer)"
-                                    class="p-2.5 rounded-xl bg-slate-100 hover:bg-amber-500 hover:text-white dark:bg-white/5 transition-all"
-                                >
-                                    <svg
-                                        class="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                        />
-                                    </svg>
-                                </button>
-                                <button
-                                    @click="deleteCustomer(customer)"
-                                    class="p-2.5 rounded-xl bg-slate-100 hover:bg-red-500 hover:text-white dark:bg-white/5 transition-all"
-                                >
-                                    <svg
-                                        class="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                        />
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Mobile List View -->
-        <div v-else class="grid grid-cols-1 gap-4 pb-20">
+        <!-- Grid View (Standardized) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
             <div
                 v-for="customer in customersList"
                 :key="customer.id"
-                class="p-6 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 premium-shadow"
+                class="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 premium-shadow group"
             >
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-4">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-4 flex-1 pr-4">
                         <div
-                            class="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-xl"
+                            class="shrink-0 h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-xl"
                         >
                             {{ customer.name.charAt(0) }}
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <h3
-                                class="font-black text-slate-900 dark:text-white uppercase tracking-tight"
+                                class="font-black text-slate-900 dark:text-white uppercase tracking-tight truncate"
                             >
                                 {{ customer.name }}
                             </h3>
-                            <p
-                                class="text-xs text-slate-500 font-bold tracking-tight"
-                            >
-                                {{ customer.phone || __("no_phone") }}
-                            </p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">{{ customer.phone || __("no_phone") }}</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="text-right max-w-[40%] flex-shrink-0">
-                        <p
-                            class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-                        >
-                            {{ __("notes") }}
-                        </p>
-                        <p
-                            class="text-[10px] font-black text-slate-900 dark:text-amber-500 mt-0.5 truncate whitespace-nowrap overflow-hidden"
-                        >
-                            {{ customer.notes || "-" }}
-                        </p>
-                    </div>
+                </div>
+                
+                <div v-if="customer.notes" class="mb-4 bg-slate-50 dark:bg-white/5 p-3 rounded-xl">
+                    <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
+                        {{ __("notes") }}
+                    </p>
+                    <p class="text-xs font-bold text-slate-600 dark:text-slate-300">
+                        {{ customer.notes }}
+                    </p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mt-6">
+                <div class="grid grid-cols-3 gap-3 mt-4">
+                    <button
+                        @click="openHistoryModal(customer)"
+                        class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 px-2 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold text-[10px] sm:text-xs hover:bg-blue-600 hover:text-white transition-all"
+                    >
+                        <svg class="w-4 h-4 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="truncate">{{ __("history") }}</span>
+                    </button>
                     <button
                         @click="openEditModal(customer)"
-                        class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-slate-900 text-white dark:bg-white/10 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all"
+                        class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 px-2 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold text-[10px] sm:text-xs hover:bg-amber-500 hover:text-white transition-all"
                     >
-                        <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                        </svg>
-                        {{ __("edit") }}
+                        <svg class="w-4 h-4 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                        <span class="truncate">{{ __("edit") }}</span>
                     </button>
                     <button
                         @click="deleteCustomer(customer)"
-                        class="flex items-center justify-center gap-2 py-4 rounded-2xl bg-red-50 text-red-600 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all border border-red-100"
+                        class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 px-2 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 font-bold text-[10px] sm:text-xs hover:bg-red-600 hover:text-white transition-all"
                     >
-                        <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                        </svg>
-                        {{ __("delete") }}
+                        <svg class="w-4 h-4 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        <span class="truncate">{{ __("delete") }}</span>
                     </button>
                 </div>
             </div>
@@ -605,6 +500,60 @@ const formatDate = (date) => {
                                 : __("create_customer")
                         }}
                     </button>
+                </div>
+            </div>
+        </Modal>
+
+        <!-- History Modal -->
+        <Modal :show="isHistoryModalOpen" @close="closeHistoryModal">
+            <div class="p-6 bg-white dark:bg-slate-900 flex flex-col max-h-[90vh]">
+                <div class="flex items-center justify-between mb-6 shrink-0">
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
+                        <div class="p-2 rounded-xl bg-blue-500/10 text-blue-500">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        {{ __("customer_history") }}
+                    </h2>
+                    <button @click="closeHistoryModal" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition-colors">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                    </button>
+                </div>
+
+                <div v-if="isLoadingHistory" class="py-12 flex justify-center items-center">
+                    <div class="w-8 h-8 rounded-full border-4 border-slate-200 border-t-amber-500 animate-spin"></div>
+                </div>
+
+                <div v-else-if="customerHistory.length === 0" class="py-12 text-center text-slate-500 flex flex-col items-center">
+                    <svg class="w-12 h-12 mb-4 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <p class="font-bold">{{ __("no_history_found") }}</p>
+                </div>
+
+                <div v-else class="flex-1 overflow-y-auto space-y-4 pr-2 -mr-2 bg-slate-50/50 dark:bg-black/10 rounded-2xl p-4 border border-slate-100 dark:border-white/5 shadow-inner">
+                    <div v-for="item in customerHistory" :key="item.id" class="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 premium-shadow relative transition-transform hover:-translate-y-0.5">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="font-black text-slate-900 dark:text-white text-sm tracking-tight">{{ item.date }}</div>
+                            <div class="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-sm" 
+                                :class="item.status === 'completed' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30' : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300'">
+                                {{ __(item.status) }}
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-500 font-medium mb-1.5 flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"></path></svg>
+                            <span class="opacity-80">{{ item.services || '-' }}</span>
+                        </div>
+                        <div class="text-xs text-slate-500 font-medium mb-4 flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            <span class="opacity-80">{{ item.barber_name }}</span>
+                        </div>
+                        <div class="flex justify-between items-end mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
+                            <div class="text-[9px] uppercase font-black tracking-widest opacity-60">
+                                {{ __(item.payment_status) }}
+                            </div>
+                            <div class="text-base font-black text-amber-500 flex items-center gap-1">
+                                <span class="text-[10px] text-slate-400 dark:text-slate-500 font-bold">$</span>{{ item.total_price }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Modal>

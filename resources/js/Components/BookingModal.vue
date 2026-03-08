@@ -75,7 +75,10 @@ watch(
                 appt.services ||
                 []
             ).map((s) => s.id || s);
-            const d = new Date(appt.start);
+            const startStr = appt.start || appt.start_time;
+            const endStr = appt.end || appt.end_time;
+            const safeStart = typeof startStr === "string" ? startStr.replace(" ", "T") : startStr;
+            const d = new Date(safeStart);
             const pad = (n) => n.toString().padStart(2, "0");
             form.start_time = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
             form.notes = appt.extendedProps?.notes || appt.notes || "";
@@ -89,18 +92,22 @@ watch(
                 appt.extendedProps?.payment_status ||
                 appt.payment_status ||
                 "unpaid";
-            if (appt.end && appt.start) {
-                const end = new Date(appt.end);
-                const start = new Date(appt.start);
+            if (endStr && startStr) {
+                const safeEnd = typeof endStr === "string" ? endStr.replace(" ", "T") : endStr;
+                const end = new Date(safeEnd);
+                const start = new Date(safeStart);
                 form.total_duration = Math.round((end - start) / 60000);
             } else {
-                form.total_duration = 0;
+                form.total_duration = props.services
+                    .filter((s) => form.service_ids.includes(s.id))
+                    .reduce((sum, s) => sum + parseInt(s.duration_minutes || 0), 0);
             }
             isManualPrice.value = true;
             isManualDuration.value = true;
         } else {
             form.reset();
             customerSearch.value = "";
+            searchResults.value = [];
             isManualPrice.value = false;
             isManualDuration.value = false;
         }
@@ -189,12 +196,12 @@ watch(
         if (!isManualDuration.value) {
             form.total_duration = props.services
                 .filter((s) => newIds.includes(s.id))
-                .reduce((sum, s) => sum + parseInt(s.duration_minutes), 0);
+                .reduce((sum, s) => sum + parseInt(s.duration_minutes || 0), 0);
         }
         if (!isManualPrice.value) {
             form.total_price = props.services
                 .filter((s) => newIds.includes(s.id))
-                .reduce((sum, s) => sum + parseFloat(s.price), 0);
+                .reduce((sum, s) => sum + parseFloat(s.price || 0), 0);
         }
     },
     { deep: true },
@@ -546,6 +553,7 @@ const close = () => {
     form.reset();
     form.clearErrors();
     customerSearch.value = "";
+    searchResults.value = [];
     showNewCustomerFields.value = false;
 };
 
