@@ -162,7 +162,7 @@ const isRouteActive = (routeName) => {
 
 <template>
     <div
-        class="min-h-screen bg-slate-50 dark:bg-slate-950 flex selection:bg-amber-100 selection:text-amber-900"
+        class="min-h-screen bg-slate-50 dark:bg-slate-950 flex selection:bg-rose-100 selection:text-rose-900"
     >
         <!-- Impersonation Banner -->
         <div v-if="page.props.auth.is_impersonating" class="fixed top-0 left-0 right-0 z-[100] bg-red-600 text-white px-4 py-2 flex items-center justify-between shadow-2xl">
@@ -200,18 +200,18 @@ const isRouteActive = (routeName) => {
                     class="flex items-center gap-4 active:scale-95 transition-transform duration-300 shrink-0"
                 >
                     <ApplicationLogo
-                        class="w-12 h-12 shadow-[0_0_30px_rgba(245,158,11,0.3)] rounded-2xl border-2 border-amber-500/20"
+                        class="w-12 h-12 shadow-[0_0_30px_rgba(244,63,94,0.3)] rounded-2xl border-2 border-rose-500/20"
                     />
                     <span
                         v-if="!isCollapsed"
                         class="text-2xl font-black text-white tracking-tighter uppercase italic transition-all duration-300 whitespace-nowrap"
-                        >Barber<span class="text-amber-500">App</span></span
+                        >Beauty<span class="text-rose-500">App</span></span
                     >
                 </Link>
                 <!-- Desktop Collapse Button -->
                 <button
                     @click="isCollapsed = !isCollapsed"
-                    class="hidden md:flex p-2.5 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-amber-500 transition-all transform border border-transparent hover:border-white/10"
+                    class="hidden md:flex p-2.5 rounded-2xl text-slate-500 hover:bg-white/5 hover:text-rose-500 transition-all transform border border-transparent hover:border-white/10"
                     :class="isCollapsed ? 'rotate-180' : ''"
                 >
                     <svg
@@ -235,7 +235,7 @@ const isRouteActive = (routeName) => {
                 <div>
                     <p
                         v-if="!isCollapsed"
-                        class="text-[10px] font-black text-amber-500 uppercase tracking-[0.4em] px-5 mb-6 whitespace-nowrap italic opacity-80"
+                        class="text-[10px] font-black text-rose-500 uppercase tracking-[0.4em] px-5 mb-6 whitespace-nowrap italic opacity-80"
                     >
                         {{ user.role === 'super_admin' ? 'PLATFORM GOVERNANCE' : __("main_menu", currentLocale) }}
                     </p>
@@ -247,7 +247,7 @@ const isRouteActive = (routeName) => {
                             :title="isCollapsed ? item.name : ''"
                             :class="[
                                 isRouteActive(item.route)
-                                    ? 'bg-amber-500/10 text-amber-500 shadow-[inset_0_0_30px_rgba(245,158,11,0.1)] border-amber-500/20'
+                                    ? 'bg-rose-500/10 text-rose-500 shadow-[inset_0_0_30px_rgba(244,63,94,0.1)] border-rose-500/20'
                                     : 'text-slate-400 hover:bg-white/[0.03] hover:text-white border-transparent',
                                 'group flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest italic rounded-[1.25rem] transition-all duration-300 overflow-hidden border',
                             ]"
@@ -257,8 +257,8 @@ const isRouteActive = (routeName) => {
                                     'p-2.5 rounded-xl transition-all duration-300',
                                     isCollapsed ? 'mx-auto' : 'mr-4',
                                     isRouteActive(item.route)
-                                        ? 'bg-amber-500 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] rotate-3'
-                                        : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-amber-500',
+                                        ? 'bg-rose-500 text-slate-950 shadow-[0_0_20px_rgba(244,63,94,0.4)] rotate-3'
+                                        : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-rose-500',
                                 ]"
                             >
                                 <svg
@@ -313,7 +313,7 @@ const isRouteActive = (routeName) => {
                                         stroke-linecap="round"
                                         stroke-linejoin="round"
                                         stroke-width="2"
-                                        d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"
+                                        d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.456-2.455l.259-1.036.259 1.036a3.375 3.375 0 002.455 2.455l1.036.259-1.036.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
                                     />
                                     <path
                                         v-else-if="
@@ -401,7 +401,7 @@ const isRouteActive = (routeName) => {
                     :class="isCollapsed ? 'justify-center p-2' : 'gap-4'"
                 >
                     <div
-                        class="h-12 w-12 shrink-0 rounded-2xl bg-amber-500 flex items-center justify-center text-slate-950 font-black shadow-[0_0_25px_rgba(245,158,11,0.3)] uppercase italic rotate-3"
+                        class="h-12 w-12 shrink-0 rounded-2xl bg-rose-500 flex items-center justify-center text-slate-950 font-black shadow-[0_0_25px_rgba(244,63,94,0.3)] uppercase italic rotate-3"
                     >
                         {{ user.name.charAt(0) }}
                     </div>
@@ -409,7 +409,7 @@ const isRouteActive = (routeName) => {
                         v-if="!isCollapsed"
                         class="min-w-0 transition-all duration-300"
                     >
-                        <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest italic mb-0.5 opacity-60">
+                        <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest italic mb-0.5 opacity-60">
                             {{ user.role === 'super_admin' ? 'GENESIS CORE' : user.role }}
                         </p>
                         <p class="text-xs font-black text-white truncate uppercase italic tracking-tighter">
@@ -467,7 +467,7 @@ const isRouteActive = (routeName) => {
                         <!-- Dark Mode Toggle -->
                         <button
                             @click="toggleDarkMode"
-                            class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:text-amber-500 hover:bg-amber-50 dark:text-slate-400 dark:hover:text-amber-400 dark:hover:bg-amber-500/10 transition-all"
+                            class="h-10 w-10 flex items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 text-slate-500 hover:text-rose-500 hover:bg-rose-50 dark:text-slate-400 dark:hover:text-rose-400 dark:hover:bg-rose-500/10 transition-all"
                         >
                             <svg
                                 v-if="!isDarkMode"
@@ -526,17 +526,17 @@ const isRouteActive = (routeName) => {
                             <template #content>
                                 <a
                                     :href="route('language.switch', 'en')"
-                                    class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-amber-500 hover:text-white transition-colors"
+                                    class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-rose-500 hover:text-white transition-colors"
                                     >English</a
                                 >
                                 <a
                                     :href="route('language.switch', 'fr')"
-                                    class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-amber-500 hover:text-white transition-colors"
+                                    class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-rose-500 hover:text-white transition-colors"
                                     >Français</a
                                 >
                                 <a
                                     :href="route('language.switch', 'ar')"
-                                    class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-amber-500 hover:text-white transition-colors"
+                                    class="block px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-rose-500 hover:text-white transition-colors"
                                     >العربية</a
                                 >
                             </template>

@@ -125,18 +125,18 @@ const formatShortDate = (date) => {
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200 dark:border-white/5 premium-shadow">
             <div class="space-y-2">
                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{{ __('bill_type') }}</label>
-                <select v-model="filterForm.type" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all">
+                <select v-model="filterForm.type" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all">
                     <option value="">{{ __('all_types') }}</option>
                     <option v-for="t in types" :key="t.value" :value="t.value">{{ t.label }}</option>
                 </select>
             </div>
             <div class="space-y-2">
                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{{ __('start_date') }}</label>
-                <input v-model="filterForm.start_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all" />
+                <input v-model="filterForm.start_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all" />
             </div>
             <div class="space-y-2">
                 <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{{ __('end_date') }}</label>
-                <input v-model="filterForm.end_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all" />
+                <input v-model="filterForm.end_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all" />
             </div>
             <div class="flex items-end">
                 <button @click="clearFilters" class="w-full py-3 rounded-2xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-white/10 transition-all">
@@ -163,7 +163,7 @@ const formatShortDate = (date) => {
                             <span class="text-sm font-bold text-slate-600 dark:text-slate-400">{{ bill.date }}</span>
                         </td>
                         <td class="px-8 py-6">
-                            <span class="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-500 text-[10px] font-black uppercase tracking-widest border border-amber-500/20">
+                            <span class="px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-500 text-[10px] font-black uppercase tracking-widest border border-rose-500/20">
                                 {{ __(bill.type.toLowerCase()) }}
                             </span>
                         </td>
@@ -188,7 +188,7 @@ const formatShortDate = (date) => {
             <div v-for="bill in bills.data" :key="bill.id" class="p-5 rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 premium-shadow">
                 <div class="flex justify-between items-start mb-4">
                     <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-sm">
+                        <div class="h-10 w-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-black text-sm">
                             {{ bill.type.charAt(0) }}
                         </div>
                         <div>
@@ -198,7 +198,7 @@ const formatShortDate = (date) => {
                     </div>
                     <div class="text-right">
                         <span class="text-[9px] font-black uppercase tracking-widest text-slate-400 block">{{ __('bill_amount') }}</span>
-                        <span class="text-sm font-black text-amber-500 underline decoration-amber-500/30 decoration-2 underline-offset-4">{{ formatCurrency(bill.amount) }}</span>
+                        <span class="text-sm font-black text-rose-500 underline decoration-rose-500/30 decoration-2 underline-offset-4">{{ formatCurrency(bill.amount) }}</span>
                     </div>
                 </div>
 
@@ -235,7 +235,7 @@ const formatShortDate = (date) => {
         <button 
             v-if="isMobile"
             @click="showAddModal = true"
-            class="fixed bottom-8 right-6 z-40 h-14 w-14 rounded-2xl bg-amber-500 text-slate-900 shadow-2xl shadow-amber-500/40 flex items-center justify-center active:scale-90 transition-all border-4 border-white dark:border-slate-900"
+            class="fixed bottom-8 right-6 z-40 h-14 w-14 rounded-2xl bg-rose-500 text-white shadow-2xl shadow-rose-500/40 flex items-center justify-center active:scale-90 transition-all border-4 border-white dark:border-slate-900"
         >
             <svg class="w-8 h-8 font-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" /></svg>
         </button>
@@ -245,7 +245,7 @@ const formatShortDate = (date) => {
             <div class="p-6 sm:p-10 bg-white dark:bg-slate-900">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3">
-                         <div class="p-2 rounded-xl bg-amber-500/10 text-amber-500">
+                         <div class="p-2 rounded-xl bg-rose-500/10 text-rose-500">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                         </div>
                         {{ __('add_bill') }}
@@ -275,9 +275,9 @@ const formatShortDate = (date) => {
                     </div>
 
                     <!-- Custom Type Input (Visible only if Other is selected) -->
-                    <div v-if="form.type === 'Other'" class="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 animate-in fade-in slide-in-from-top-2">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-amber-600 mb-2">{{ __('specify_type') }}</p>
-                        <input v-model="customType" type="text" class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm placeholder:text-amber-500/30" :placeholder="__('specify_type_placeholder')" />
+                    <div v-if="form.type === 'Other'" class="p-5 rounded-2xl bg-rose-500/5 border border-rose-500/20 animate-in fade-in slide-in-from-top-2">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-rose-600 mb-2">{{ __('specify_type') }}</p>
+                        <input v-model="customType" type="text" class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm placeholder:text-rose-500/30" :placeholder="__('specify_type_placeholder')" />
                     </div>
 
                     <div class="p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
@@ -287,7 +287,7 @@ const formatShortDate = (date) => {
                     
                     <div class="flex gap-4 pt-4">
                         <button @click="showAddModal = false" type="button" class="flex-1 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-black uppercase tracking-widest text-[10px] hover:bg-slate-200 transition-all">{{ __('cancel') }}</button>
-                        <button :disabled="form.processing" class="flex-2 px-10 py-4 rounded-2xl bg-amber-500 text-slate-900 font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50">
+                        <button :disabled="form.processing" class="flex-2 px-10 py-4 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-rose-500/20 active:scale-95 transition-all disabled:opacity-50">
                             {{ __('add_bill') }}
                         </button>
                     </div>

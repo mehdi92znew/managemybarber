@@ -85,7 +85,7 @@ const close = () => {
                 </div>
 
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500">{{ __('barber') }}</h3>
+                    <h3 class="text-sm font-medium text-gray-500">{{ __('stylist') }}</h3>
                     <p class="text-gray-900 dark:text-white">{{ appointment.extendedProps?.barber_name }}</p>
                 </div>
 

@@ -130,7 +130,7 @@ const formatDate = (date) => {
                 <h2
                     class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight"
                 >
-                    {{ __("barber_payouts") }}
+                    {{ __("stylist_payouts") }}
                 </h2>
                 <p class="text-sm text-slate-500 font-medium mt-1">
                     {{ __("manage_payouts_desc") }}
@@ -164,13 +164,13 @@ const formatDate = (date) => {
             <div class="space-y-2">
                 <label
                     class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1"
-                    >{{ __("filter_by_barber") }}</label
+                    >{{ __("filter_by_stylist") }}</label
                 >
                 <select
                     v-model="filterForm.barber_id"
-                    class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all"
+                    class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all"
                 >
-                    <option value="">{{ __("all_barbers") }}</option>
+                    <option value="">{{ __("all_stylists") }}</option>
                     <option v-for="b in barbers" :key="b.id" :value="b.id">
                         {{ b.name }}
                     </option>
@@ -184,7 +184,7 @@ const formatDate = (date) => {
                 <input
                     v-model="filterForm.start_date"
                     type="date"
-                    class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all"
+                    class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all"
                 />
             </div>
             <div class="space-y-2">
@@ -195,7 +195,7 @@ const formatDate = (date) => {
                 <input
                     v-model="filterForm.end_date"
                     type="date"
-                    class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all"
+                    class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all"
                 />
             </div>
             <div class="flex items-end">
@@ -226,7 +226,7 @@ const formatDate = (date) => {
                         <th
                             class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
                         >
-                            {{ __("barber") }}
+                            {{ __("stylist") }}
                         </th>
                         <th
                             class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]"
@@ -279,7 +279,7 @@ const formatDate = (date) => {
                         <td class="px-8 py-6">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs font-black"
+                                    class="h-8 w-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center text-xs font-black"
                                 >
                                     {{ payout.barber.name.charAt(0) }}
                                 </div>
@@ -337,14 +337,14 @@ const formatDate = (date) => {
                 <div class="flex justify-between items-start mb-4">
                     <div class="flex items-center gap-3">
                         <div
-                            class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-sm"
+                            class="h-10 w-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-black text-sm"
                         >
                             {{ payout.barber.name.charAt(0) }}
                         </div>
                         <div>
                             <span
                                 class="text-[9px] font-black uppercase tracking-widest text-slate-400 block"
-                                >{{ __("barber") }}</span
+                                >{{ __("stylist") }}</span
                             >
                             <span
                                 class="text-xs font-black text-slate-900 dark:text-white uppercase"
@@ -444,7 +444,7 @@ const formatDate = (date) => {
         <button
             v-if="isMobile"
             @click="showAddModal = true"
-            class="fixed bottom-8 right-6 z-40 h-14 w-14 rounded-2xl bg-amber-500 text-slate-900 shadow-2xl shadow-amber-500/40 flex items-center justify-center active:scale-90 transition-all border-4 border-white dark:border-slate-900"
+            class="fixed bottom-8 right-6 z-40 h-14 w-14 rounded-2xl bg-rose-500 text-white shadow-2xl shadow-rose-500/40 flex items-center justify-center active:scale-90 transition-all border-4 border-white dark:border-slate-900"
         >
             <svg
                 class="w-8 h-8 font-black"
@@ -469,7 +469,7 @@ const formatDate = (date) => {
                         class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3"
                     >
                         <div
-                            class="p-2 rounded-xl bg-amber-500/10 text-amber-500"
+                            class="p-2 rounded-xl bg-rose-500/10 text-rose-500"
                         >
                             <svg
                                 class="h-6 w-6"
@@ -514,14 +514,14 @@ const formatDate = (date) => {
                         <p
                             class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
                         >
-                            {{ __("barber") }}
+                            {{ __("stylist") }}
                         </p>
                         <select
                             v-model="form.barber_id"
                             class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm"
                         >
                             <option value="" disabled>
-                                {{ __("select_barber") }}
+                                {{ __("select_stylist") }}
                             </option>
                             <option
                                 v-for="b in barbers"
@@ -592,7 +592,7 @@ const formatDate = (date) => {
                         </button>
                         <button
                             :disabled="form.processing"
-                            class="flex-2 px-10 py-4 rounded-2xl bg-amber-500 text-slate-900 font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
+                            class="flex-2 px-10 py-4 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-rose-500/20 active:scale-95 transition-all disabled:opacity-50"
                         >
                             {{ __("add_payout") }}
                         </button>

@@ -170,7 +170,7 @@ const getIconColor = (type) => {
         <template #header-actions>
             <PrimaryButton
                 @click="openAddModal"
-                class="!rounded-xl !px-4 sm:!px-6 !py-2.5 sm:!py-3 shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-transform active:scale-95"
+                class="!rounded-xl !px-4 sm:!px-6 !py-2.5 sm:!py-3 shadow-lg shadow-rose-500/20 flex items-center gap-2 transition-transform active:scale-95 text-white"
             >
                 <svg
                     class="w-4 h-4 sm:w-5 sm:h-5"
@@ -199,9 +199,9 @@ const getIconColor = (type) => {
                 <select
                     v-model="filterForm.barber_id"
                     @change="applyFilters"
-                    class="w-full sm:w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 focus:ring-amber-500 focus:border-amber-500 px-4 py-2.5 shadow-sm transition-all hover:border-slate-300 dark:hover:border-white/20"
+                    class="w-full sm:w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 focus:ring-rose-500 focus:border-rose-500 px-4 py-2.5 shadow-sm transition-all hover:border-slate-300 dark:hover:border-white/20"
                 >
-                    <option value="">{{ __("all_barbers") }}</option>
+                    <option value="">{{ __("all_stylists") }}</option>
                     <option
                         v-for="barber in barbers"
                         :key="barber.id"
@@ -214,7 +214,7 @@ const getIconColor = (type) => {
                 <select
                     v-model="filterForm.type"
                     @change="applyFilters"
-                    class="w-full sm:w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 focus:ring-amber-500 focus:border-amber-500 px-4 py-2.5 shadow-sm transition-all hover:border-slate-300 dark:hover:border-white/20"
+                    class="w-full sm:w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 focus:ring-rose-500 focus:border-rose-500 px-4 py-2.5 shadow-sm transition-all hover:border-slate-300 dark:hover:border-white/20"
                 >
                     <option value="">{{ __("all_types") }}</option>
                     <option value="info">{{ __("info") }}</option>
@@ -227,7 +227,7 @@ const getIconColor = (type) => {
                     type="date"
                     v-model="filterForm.date"
                     @change="applyFilters"
-                    class="w-full sm:w-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 focus:ring-amber-500 focus:border-amber-500 px-4 py-2.5 shadow-sm transition-all hover:border-slate-300 dark:hover:border-white/20"
+                    class="w-full sm:w-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 focus:ring-rose-500 focus:border-rose-500 px-4 py-2.5 shadow-sm transition-all hover:border-slate-300 dark:hover:border-white/20"
                 />
 
                 <button
@@ -241,8 +241,8 @@ const getIconColor = (type) => {
         </div>
 
         <div v-if="notes.length === 0" class="premium-shadow rounded-3xl p-12 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 mx-auto max-w-lg mt-10">
-            <div class="flex items-center justify-center w-20 h-20 mx-auto bg-amber-500/10 rounded-full mb-6 relative">
-                <svg class="w-10 h-10 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center justify-center w-20 h-20 mx-auto bg-rose-500/10 rounded-full mb-6 relative">
+                <svg class="w-10 h-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center">
@@ -253,7 +253,7 @@ const getIconColor = (type) => {
             </div>
             <h3 class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ __("no_notes_found") }}</h3>
             <p class="text-sm text-slate-500 mt-2 font-medium max-w-[250px] mx-auto">{{ __("add_notes_desc") }}</p>
-            <PrimaryButton @click="openAddModal" class="mt-8 shadow-lg shadow-amber-500/20 hover:-translate-y-0.5 transition-all w-full justify-center !py-3">
+            <PrimaryButton @click="openAddModal" class="mt-8 shadow-lg shadow-rose-500/20 hover:-translate-y-0.5 transition-all w-full justify-center !py-3 bg-rose-500 text-white">
                 {{ __("add_your_first_note") }}
             </PrimaryButton>
         </div>
@@ -324,7 +324,7 @@ const getIconColor = (type) => {
                         <h2 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
                             {{ editingNote ? __("edit_note") : __("add_note") }}
                         </h2>
-                        <div class="h-1 w-12 bg-amber-500 rounded-full mt-2"></div>
+                        <div class="h-1 text-white bg-rose-500 rounded-full mt-2 self-start w-12"></div>
                     </div>
                     <button @click="closeAddModal" class="p-2 bg-slate-100 dark:bg-white/5 rounded-xl hover:bg-slate-200 dark:hover:bg-white/10 transition-colors">
                         <svg class="h-5 w-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -354,7 +354,7 @@ const getIconColor = (type) => {
                             <button
                                 type="button"
                                 @click="form.type = 'warning'"
-                                :class="form.type === 'warning' ? 'bg-amber-500 text-white ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-slate-900' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                                :class="form.type === 'warning' ? 'bg-orange-500 text-white ring-2 ring-orange-500 ring-offset-2 dark:ring-offset-slate-900' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'"
                                 class="px-4 py-3 rounded-xl border border-transparent font-bold text-xs uppercase tracking-widest transition-all"
                             >
                                 {{ __("warning") }}
@@ -373,10 +373,10 @@ const getIconColor = (type) => {
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <InputLabel :value="__('assigned_barber')" />
+                            <InputLabel :value="__('assigned_stylist')" />
                             <select
                                 v-model="form.barber_id"
-                                class="mt-2 block w-full bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500 transition-all font-medium py-3"
+                                class="mt-2 block w-full bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-rose-500 focus:border-rose-500 transition-all font-medium py-3"
                             >
                                 <option value="">{{ __("shop_note") }}</option>
                                 <option
@@ -396,7 +396,7 @@ const getIconColor = (type) => {
                             <input
                                 type="date"
                                 v-model="form.date"
-                                class="mt-2 block w-full bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500 transition-all font-medium py-3"
+                                class="mt-2 block w-full bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white focus:ring-rose-500 focus:border-rose-500 transition-all font-medium py-3"
                             />
                             <p class="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-bold">{{ __("optional") }}</p>
                             <InputError :message="form.errors.date" class="mt-2" />
@@ -408,7 +408,7 @@ const getIconColor = (type) => {
                         <textarea
                             v-model="form.content"
                             rows="4"
-                            class="mt-2 block w-full bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/10 rounded-xl shadow-sm text-slate-900 dark:text-white focus:ring-amber-500 focus:border-amber-500 sm:text-sm resize-none transition-all p-4"
+                            class="mt-2 block w-full bg-slate-50 dark:bg-black/20 border-slate-200 dark:border-white/10 rounded-xl shadow-sm text-slate-900 dark:text-white focus:ring-rose-500 focus:border-rose-500 sm:text-sm resize-none transition-all p-4"
                             :placeholder="__('enter_note_content')"
                         ></textarea>
                         <InputError :message="form.errors.content" class="mt-2" />
@@ -421,7 +421,7 @@ const getIconColor = (type) => {
                         <PrimaryButton
                             :class="{ 'opacity-25': form.processing }"
                             :disabled="form.processing"
-                            class="!px-8 !py-3 !rounded-xl shadow-lg shadow-amber-500/20"
+                            class="!px-8 !py-3 !rounded-xl shadow-lg shadow-rose-500/20 text-white bg-rose-500"
                         >
                             {{ editingNote ? __("save") : __("add_note") }}
                         </PrimaryButton>

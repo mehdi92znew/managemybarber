@@ -43,32 +43,32 @@ const formatShortDate = (date) => {
 </script>
 
 <template>
-    <Head :title="__('barber_report')" />
+    <Head :title="__('stylist_report')" />
 
     <AuthenticatedLayout>
         <template #header-title>{{ __('reports') }}</template>
-        <template #header>{{ __('barber_report') }}</template>
+        <template #header>{{ __('stylist_report') }}</template>
 
         <div class="py-6 space-y-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Filter Section -->
             <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-[2.5rem] border border-slate-200 dark:border-white/5 premium-shadow">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{{ __('barber') }}</label>
-                        <select v-model="form.barber_id" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all">
-                            <option value="" disabled>{{ __('select_barber') }}</option>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{{ __('stylist') }}</label>
+                        <select v-model="form.barber_id" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all">
+                            <option value="" disabled>{{ __('select_stylist') }}</option>
                             <option v-for="b in barbers" :key="b.id" :value="b.id">{{ b.name }}</option>
                         </select>
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{{ __('start_date') }}</label>
-                        <input v-model="form.start_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all" />
+                        <input v-model="form.start_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all" />
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">{{ __('end_date') }}</label>
-                        <input v-model="form.end_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-amber-500 transition-all" />
+                        <input v-model="form.end_date" type="date" class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-rose-500 transition-all" />
                     </div>
-                    <PrimaryButton @click="generateReport" class="w-full justify-center py-4">
+                    <PrimaryButton @click="generateReport" class="w-full justify-center py-4 bg-rose-500 text-white">
                         {{ __('generate_report') }}
                     </PrimaryButton>
                 </div>
@@ -84,8 +84,8 @@ const formatShortDate = (date) => {
                     </div>
 
                     <!-- Total Commission -->
-                    <div class="p-6 rounded-[2rem] bg-amber-500 text-slate-900 premium-shadow">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-900/50 mb-2">{{ __('total_commission_earned') }}</p>
+                    <div class="p-6 rounded-[2rem] bg-rose-500 text-white premium-shadow">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-white/50 mb-2">{{ __('total_commission_earned') }}</p>
                         <p class="text-2xl font-black">{{ formatCurrency(reportData.totals.commission) }}</p>
                     </div>
 
@@ -166,7 +166,7 @@ const formatShortDate = (date) => {
                     <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 </div>
                 <h3 class="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ __('generate_report') }}</h3>
-                <p class="text-sm text-slate-500 mt-2 font-medium">{{ __('select_barber_dates_desc') }}</p>
+                <p class="text-sm text-slate-500 mt-2 font-medium">{{ __('select_stylist_dates_desc') }}</p>
             </div>
         </div>
     </AuthenticatedLayout>

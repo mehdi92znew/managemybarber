@@ -613,7 +613,7 @@ const deleteAppointment = () => {
                 <h2
                     class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3"
                 >
-                    <div class="p-2 rounded-xl bg-amber-500/10 text-amber-500">
+                    <div class="p-2 rounded-xl bg-rose-500/10 text-rose-500">
                         <svg
                             class="h-5 w-5 sm:h-6 sm:w-6"
                             fill="none"
@@ -659,7 +659,7 @@ const deleteAppointment = () => {
                     <p
                         class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2"
                     >
-                        {{ __("barber") }}
+                        {{ __("stylist") }}
                     </p>
                     <select
                         id="barber"
@@ -667,7 +667,7 @@ const deleteAppointment = () => {
                         class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm"
                     >
                         <option value="" disabled>
-                            {{ __("select_barber") }}
+                            {{ __("select_stylist") }}
                         </option>
                         <option
                             v-for="barber in barbers"
@@ -716,7 +716,7 @@ const deleteAppointment = () => {
                             @click="
                                 showNewCustomerFields = !showNewCustomerFields
                             "
-                            class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600 transition-colors"
+                            class="text-[10px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-600 transition-colors"
                         >
                             {{
                                 showNewCustomerFields
@@ -741,7 +741,7 @@ const deleteAppointment = () => {
                                 class="absolute right-0 top-0"
                             >
                                 <svg
-                                    class="animate-spin h-4 w-4 text-amber-500"
+                                    class="animate-spin h-4 w-4 text-rose-500"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -868,7 +868,7 @@ const deleteAppointment = () => {
                         <!-- Selection Area / Dropdown Trigger -->
                         <div
                             @click="openServiceDropdown"
-                            class="min-h-[46px] p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex flex-wrap gap-2 items-center cursor-pointer hover:border-amber-500/30 transition-all focus-within:ring-2 focus-within:ring-amber-500/20"
+                            class="min-h-[46px] p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 flex flex-wrap gap-2 items-center cursor-pointer hover:border-rose-500/30 transition-all focus-within:ring-2 focus-within:ring-rose-500/20"
                         >
                             <div
                                 v-if="
@@ -883,7 +883,7 @@ const deleteAppointment = () => {
                             <div
                                 v-for="service in selectedServices"
                                 :key="service.id"
-                                class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 animate-in fade-in zoom-in duration-200"
+                                class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-rose-500/10 text-rose-600 border border-rose-500/20 animate-in fade-in zoom-in duration-200"
                             >
                                 <span
                                     class="text-[10px] font-black uppercase tracking-wider"
@@ -891,7 +891,7 @@ const deleteAppointment = () => {
                                 >
                                 <button
                                     @click.stop="toggleService(service.id)"
-                                    class="p-0.5 hover:bg-amber-500/20 rounded-md transition-colors"
+                                    class="p-0.5 hover:bg-rose-500/20 rounded-md transition-colors"
                                 >
                                     <svg
                                         class="w-3 h-3"
@@ -963,7 +963,7 @@ const deleteAppointment = () => {
                                     class="flex items-center justify-between p-3.5 sm:p-3 rounded-xl cursor-pointer transition-all active:scale-[0.98]"
                                     :class="
                                         form.service_ids.includes(service.id)
-                                            ? 'bg-amber-500/10 border-amber-500/30'
+                                            ? 'bg-rose-500/10 border-rose-500/30'
                                             : 'hover:bg-slate-50 dark:hover:bg-white/5'
                                     "
                                 >
@@ -974,7 +974,7 @@ const deleteAppointment = () => {
                                                 form.service_ids.includes(
                                                     service.id,
                                                 )
-                                                    ? 'bg-amber-500 border-amber-500'
+                                                    ? 'bg-rose-50 border-rose-500'
                                                     : 'border-slate-300 dark:border-slate-700'
                                             "
                                         >
@@ -1011,7 +1011,7 @@ const deleteAppointment = () => {
                                         </div>
                                     </div>
                                     <span
-                                        class="text-xs font-black text-amber-600 dark:text-amber-500"
+                                        class="text-xs font-black text-rose-600 dark:text-rose-500"
                                         >{{
                                             formatCurrency(service.price)
                                         }}</span
@@ -1104,7 +1104,7 @@ const deleteAppointment = () => {
 
                 <!-- Summary -->
                 <div
-                    class="flex flex-col sm:flex-row gap-4 items-center justify-between p-5 rounded-3xl bg-slate-900 dark:bg-amber-500 shadow-xl"
+                    class="flex flex-col sm:flex-row gap-4 items-center justify-between p-5 rounded-3xl bg-slate-900 dark:bg-rose-500 shadow-xl"
                 >
                     <div class="flex items-center gap-6">
                         <div class="text-center sm:text-left">
@@ -1161,7 +1161,7 @@ const deleteAppointment = () => {
                         </button>
                         <button
                             @click="submit"
-                            class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-amber-500 dark:bg-slate-900 text-slate-900 dark:text-amber-500 text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
+                            class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-rose-500 text-white text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-rose-500/20 active:scale-95 transition-all disabled:opacity-50"
                             :disabled="form.processing"
                         >
                             {{ buttonText }}

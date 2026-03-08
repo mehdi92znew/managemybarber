@@ -29,7 +29,7 @@ const filteredLinks = computed(() => {
                 <Link
                     v-else
                     class="px-5 py-3 text-xs font-black uppercase tracking-widest transition-all rounded-2xl border border-slate-200 dark:border-white/5 premium-shadow active:scale-95"
-                    :class="{ 'bg-amber-500 text-slate-900 border-amber-500 shadow-lg shadow-amber-500/20': link.active, 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5': !link.active }"
+                    :class="{ 'bg-rose-500 text-white border-rose-500 shadow-lg shadow-rose-500/20': link.active, 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5': !link.active }"
                     :href="link.url"
                     v-html="link.label"
                     preserve-scroll

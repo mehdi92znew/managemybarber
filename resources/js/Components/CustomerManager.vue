@@ -197,7 +197,7 @@ const formatDate = (date) => {
                 class="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4"
             >
                 <div
-                    class="flex-1 flex items-center gap-3 bg-slate-50 dark:bg-white/5 px-4 rounded-2xl border border-slate-100 dark:border-white/10 group focus-within:border-amber-500/50 transition-all"
+                    class="flex-1 flex items-center gap-3 bg-slate-50 dark:bg-white/5 px-4 rounded-2xl border border-slate-100 dark:border-white/10 group focus-within:border-rose-500/50 transition-all"
                 >
                     <svg
                         class="w-5 h-5 text-slate-400"
@@ -220,7 +220,7 @@ const formatDate = (date) => {
                     />
                     <button
                         @click="applyFilters"
-                        class="px-4 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-amber-500 dark:text-slate-900 text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
+                        class="px-4 py-1.5 rounded-xl bg-slate-900 text-white dark:bg-rose-500 dark:text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all"
                     >
                         {{ __("search") }}
                     </button>
@@ -268,7 +268,7 @@ const formatDate = (date) => {
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center gap-4 flex-1 pr-4">
                         <div
-                            class="shrink-0 h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-xl"
+                            class="shrink-0 h-12 w-12 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-black text-xl"
                         >
                             {{ customer.name.charAt(0) }}
                         </div>
@@ -304,7 +304,7 @@ const formatDate = (date) => {
                     </button>
                     <button
                         @click="openEditModal(customer)"
-                        class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 px-2 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold text-[10px] sm:text-xs hover:bg-amber-500 hover:text-white transition-all"
+                        class="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-3 px-2 rounded-xl bg-slate-50 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold text-[10px] sm:text-xs hover:bg-rose-500 hover:text-white transition-all"
                     >
                         <svg class="w-4 h-4 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         <span class="truncate">{{ __("edit") }}</span>
@@ -365,7 +365,7 @@ const formatDate = (date) => {
         <button
             v-if="isMobile"
             @click="openCreateModal"
-            class="fixed bottom-8 right-6 z-40 h-14 w-14 rounded-2xl bg-amber-500 text-slate-900 shadow-2xl shadow-amber-500/40 flex items-center justify-center active:scale-90 transition-all border-4 border-white dark:border-slate-900"
+            class="fixed bottom-8 right-6 z-40 h-14 w-14 rounded-2xl bg-rose-500 text-white shadow-2xl shadow-rose-500/40 flex items-center justify-center active:scale-90 transition-all border-4 border-white dark:border-slate-900"
         >
             <svg
                 class="w-8 h-8 font-black"
@@ -390,7 +390,7 @@ const formatDate = (date) => {
                         class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-3"
                     >
                         <div
-                            class="p-2 rounded-xl bg-amber-500/10 text-amber-500"
+                            class="p-2 rounded-xl bg-rose-500/10 text-rose-500"
                         >
                             <svg
                                 class="h-6 w-6"
@@ -491,7 +491,7 @@ const formatDate = (date) => {
                     </button>
                     <button
                         @click="submit"
-                        class="flex-2 px-10 py-4 rounded-2xl bg-amber-500 text-slate-900 font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50"
+                        class="flex-2 px-10 py-4 rounded-2xl bg-rose-500 text-white font-black uppercase tracking-[0.2em] text-[10px] shadow-lg shadow-rose-500/20 active:scale-95 transition-all disabled:opacity-50"
                         :disabled="isProcessing"
                     >
                         {{
@@ -520,7 +520,7 @@ const formatDate = (date) => {
                 </div>
 
                 <div v-if="isLoadingHistory" class="py-12 flex justify-center items-center">
-                    <div class="w-8 h-8 rounded-full border-4 border-slate-200 border-t-amber-500 animate-spin"></div>
+                    <div class="w-8 h-8 rounded-full border-4 border-slate-200 border-t-rose-500 animate-spin"></div>
                 </div>
 
                 <div v-else-if="customerHistory.length === 0" class="py-12 text-center text-slate-500 flex flex-col items-center">
@@ -542,14 +542,14 @@ const formatDate = (date) => {
                             <span class="opacity-80">{{ item.services || '-' }}</span>
                         </div>
                         <div class="text-xs text-slate-500 font-medium mb-4 flex items-center gap-2">
-                            <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            <span class="opacity-80">{{ item.barber_name }}</span>
+                             <svg class="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            <span class="opacity-80">{{ item.stylist_name || item.barber_name }}</span>
                         </div>
                         <div class="flex justify-between items-end mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
                             <div class="text-[9px] uppercase font-black tracking-widest opacity-60">
                                 {{ __(item.payment_status) }}
                             </div>
-                            <div class="text-base font-black text-amber-500 flex items-center gap-1">
+                            <div class="text-base font-black text-rose-500 flex items-center gap-1">
                                 <span class="text-[10px] text-slate-400 dark:text-slate-500 font-bold">$</span>{{ item.total_price }}
                             </div>
                         </div>

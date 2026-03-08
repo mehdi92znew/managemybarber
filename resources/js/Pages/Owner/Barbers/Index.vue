@@ -9,11 +9,11 @@ const props = defineProps({
 </script>
 
 <template>
-    <Head :title="__('manage_barbers')" />
+    <Head :title="__('manage_stylists')" />
 
     <AuthenticatedLayout>
         <template #header>
-            {{ __('barber_management') }}
+            {{ __('stylist_management') }}
         </template>
 
         <div class="py-12">

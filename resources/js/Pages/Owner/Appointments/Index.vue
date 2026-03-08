@@ -117,7 +117,7 @@ const getStatusClass = (status) => {
         case "completed":
             return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
         case "scheduled":
-            return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+            return "bg-rose-500/10 text-rose-500 border-rose-500/20";
         case "cancelled":
             return "bg-red-500/10 text-red-500 border-red-500/20";
         default:
@@ -130,7 +130,7 @@ const getPaymentStatusClass = (status) => {
         case "paid":
             return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
         case "semi-paid":
-            return "bg-amber-500/10 text-amber-500 border-amber-500/20";
+            return "bg-rose-500/10 text-rose-500 border-rose-500/20";
         case "unpaid":
         case "pending":
             return "bg-slate-500/10 text-slate-500 border-slate-500/20";
@@ -155,13 +155,13 @@ const getPaymentStatusClass = (status) => {
                 <div class="space-y-2">
                     <label
                         class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1"
-                        >{{ __("barber") }}</label
+                        >{{ __("stylist") }}</label
                     >
                     <select
                         v-model="filterForm.barber_id"
-                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-0 transition-all"
+                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-0 transition-all"
                     >
-                        <option value="">{{ __("all_barbers") }}</option>
+                        <option value="">{{ __("all_stylists") }}</option>
                         <option v-for="b in barbers" :key="b.id" :value="b.id">
                             {{ b.name }}
                         </option>
@@ -174,7 +174,7 @@ const getPaymentStatusClass = (status) => {
                     >
                     <select
                         v-model="filterForm.status"
-                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-0 transition-all"
+                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-0 transition-all"
                     >
                         <option value="">{{ __("all_statuses") }}</option>
                         <option value="scheduled">{{ __("scheduled") }}</option>
@@ -189,7 +189,7 @@ const getPaymentStatusClass = (status) => {
                     >
                     <select
                         v-model="filterForm.payment_status"
-                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-0 transition-all"
+                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-0 transition-all"
                     >
                         <option value="">
                             {{ __("all_payment_statuses") }}
@@ -207,7 +207,7 @@ const getPaymentStatusClass = (status) => {
                     <input
                         v-model="filterForm.start_date"
                         type="date"
-                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-0 transition-all"
+                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-0 transition-all"
                     />
                 </div>
                 <div class="space-y-2">
@@ -218,7 +218,7 @@ const getPaymentStatusClass = (status) => {
                     <input
                         v-model="filterForm.end_date"
                         type="date"
-                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-amber-500 focus:ring-0 transition-all"
+                        class="w-full rounded-2xl border-slate-100 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-sm font-bold text-slate-900 dark:text-white focus:border-rose-500 focus:ring-0 transition-all"
                     />
                 </div>
                 <button
@@ -252,7 +252,7 @@ const getPaymentStatusClass = (status) => {
                             <th
                                 class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest"
                             >
-                                {{ __("barber") }}
+                                 {{ __("stylist") }}
                             </th>
                             <th
                                 class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest"
@@ -307,7 +307,7 @@ const getPaymentStatusClass = (status) => {
                             <td class="px-8 py-6">
                                 <div class="flex items-center gap-3">
                                     <div
-                                        class="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center text-[10px] font-black"
+                                        class="h-8 w-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center text-[10px] font-black"
                                     >
                                         {{ appt.barber?.name.charAt(0) }}
                                     </div>
@@ -350,7 +350,7 @@ const getPaymentStatusClass = (status) => {
                             <td class="px-8 py-6 text-right">
                                 <button
                                     @click="editAppointment(appt)"
-                                    class="p-2 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-400 hover:text-amber-500 transition-colors"
+                                    class="p-2 rounded-lg bg-slate-100 dark:bg-white/5 text-slate-400 hover:text-rose-500 transition-colors"
                                 >
                                     <svg
                                         class="w-4 h-4"
@@ -381,7 +381,7 @@ const getPaymentStatusClass = (status) => {
                         <div class="flex justify-between items-start mb-4">
                             <div class="flex items-center gap-3">
                                 <div
-                                    class="h-10 w-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs font-black"
+                                    class="h-10 w-10 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-xs font-black"
                                 >
                                     {{ appt.barber?.name.charAt(0) }}
                                 </div>
@@ -440,7 +440,7 @@ const getPaymentStatusClass = (status) => {
                             <div class="flex gap-2">
                                 <button
                                     @click="editAppointment(appt)"
-                                    class="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 hover:text-amber-500 transition-colors"
+                                    class="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 hover:text-rose-500 transition-colors"
                                 >
                                     <svg
                                         class="w-5 h-5"

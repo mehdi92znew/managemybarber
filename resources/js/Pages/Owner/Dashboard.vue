@@ -55,7 +55,7 @@ const trendData = computed(() => ({
     datasets: [{
         label: __('revenue'),
         data: props.charts.revenueTrend.map(item => item.total),
-        backgroundColor: '#f59e0b',
+        backgroundColor: '#f43f5e', // Rose 500
         borderRadius: 8,
     }]
 }));
@@ -64,7 +64,7 @@ const serviceData = computed(() => ({
     labels: props.charts.serviceBreakdown.map(item => item.name),
     datasets: [{
         data: props.charts.serviceBreakdown.map(item => item.revenue),
-        backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#f43f5e', '#8b5cf6'],
+        backgroundColor: ['#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#8b5cf6'], // Pink/Rose/Purple palette
         borderWidth: 0,
     }]
 }));
@@ -162,14 +162,14 @@ const greeting = computed(() => {
         <template #header-title>{{ __('dashboard') }}</template>
         <template #header>
             <div class="flex flex-col">
-                <span class="text-xs uppercase tracking-widest text-amber-500 font-bold mb-1">{{ __('owner_panel') }}</span>
+                <span class="text-xs uppercase tracking-widest text-rose-500 font-bold mb-1">{{ __('owner_panel') }}</span>
                 <span>{{ greeting }}, {{ $page.props.auth.user.name.split(' ')[0] }}</span>
             </div>
         </template>
         <template #header-subtitle>{{ __('owner_status_desc') }}</template>
 
         <template #header-actions>
-            <Link :href="route('owner.calendar.daily')" class="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-amber-500 text-white dark:text-slate-950 text-sm font-bold rounded-2xl hover:scale-105 transition-all duration-200 premium-shadow">
+            <Link :href="route('owner.calendar.daily')" class="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-rose-500 text-white dark:text-slate-950 text-sm font-bold rounded-2xl hover:scale-105 transition-all duration-200 premium-shadow">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 {{ __('daily_planning') }}
             </Link>
@@ -182,24 +182,24 @@ const greeting = computed(() => {
                 <div class="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
                     <div class="relative w-full sm:w-40 xl:w-48">
                         <label class="absolute -top-2 left-4 px-1 bg-white dark:bg-slate-900 text-[9px] font-black uppercase tracking-widest text-slate-400 z-10">{{ __('start_date') }}</label>
-                        <input v-model="filterForm.start_date" type="date" class="w-full h-14 rounded-xl border border-slate-200 dark:border-white/10 bg-transparent text-xs font-black text-slate-900 dark:text-white focus:border-amber-500 focus:ring-0 transition-all outline-none px-4" />
+                        <input v-model="filterForm.start_date" type="date" class="w-full h-14 rounded-xl border border-slate-200 dark:border-white/10 bg-transparent text-xs font-black text-slate-900 dark:text-white focus:border-rose-500 focus:ring-0 transition-all outline-none px-4" />
                     </div>
                     <div class="relative w-full sm:w-40 xl:w-48">
                         <label class="absolute -top-2 left-4 px-1 bg-white dark:bg-slate-900 text-[9px] font-black uppercase tracking-widest text-slate-400 z-10">{{ __('end_date') }}</label>
-                        <input v-model="filterForm.end_date" type="date" class="w-full h-14 rounded-xl border border-slate-200 dark:border-white/10 bg-transparent text-xs font-black text-slate-900 dark:text-white focus:border-amber-500 focus:ring-0 transition-all outline-none px-4" />
+                        <input v-model="filterForm.end_date" type="date" class="w-full h-14 rounded-xl border border-slate-200 dark:border-white/10 bg-transparent text-xs font-black text-slate-900 dark:text-white focus:border-rose-500 focus:ring-0 transition-all outline-none px-4" />
                     </div>
                 </div>
                 
                 <div class="flex flex-wrap justify-center items-center gap-2">
-                    <button @click="setQuickRange('today')" class="px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" :class="isRangeActive('today') ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'">{{ __('today') }}</button>
-                    <button @click="setQuickRange('this_week')" class="px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" :class="isRangeActive('this_week') ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'">{{ __('this_week') }}</button>
-                    <button @click="setQuickRange('this_month')" class="px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" :class="isRangeActive('this_month') ? 'bg-amber-500 text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'">{{ __('this_month') }}</button>
+                    <button @click="setQuickRange('today')" class="px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" :class="isRangeActive('today') ? 'bg-rose-500 text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'">{{ __('today') }}</button>
+                    <button @click="setQuickRange('this_week')" class="px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" :class="isRangeActive('this_week') ? 'bg-rose-500 text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'">{{ __('this_week') }}</button>
+                    <button @click="setQuickRange('this_month')" class="px-4 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all" :class="isRangeActive('this_month') ? 'bg-rose-500 text-white' : 'bg-slate-100 dark:bg-white/5 text-slate-500 hover:text-slate-900 dark:hover:text-white'">{{ __('this_month') }}</button>
                 </div>
             </div>
             
             <!-- Snapshot widgets -->
             <div class="flex flex-col gap-6">
-                <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-[2.5rem] p-8 shadow-xl shadow-amber-500/20 text-white group relative overflow-hidden flex-1 flex flex-col justify-center">
+                <div class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-[2.5rem] p-8 shadow-xl shadow-rose-500/20 text-white group relative overflow-hidden flex-1 flex flex-col justify-center">
                     <div class="absolute -right-8 -top-8 p-8 transform group-hover:scale-125 transition-transform duration-500 opacity-20">
                         <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                     </div>
@@ -285,7 +285,7 @@ const greeting = computed(() => {
                         <h3 class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ __('revenue_trend') }}</h3>
                     </div>
                     <div class="flex items-center gap-2">
-                            <div class="h-2 w-2 rounded-full bg-amber-500"></div>
+                            <div class="h-2 w-2 rounded-full bg-rose-500"></div>
                             <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ __('revenue') }}</span>
                     </div>
                 </div>
@@ -341,7 +341,7 @@ const greeting = computed(() => {
                             </div>
                             <div>
                                 <p class="text-sm font-black text-slate-900 dark:text-white">{{ barber.name }}</p>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ __('barber') }}</p>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{ __('stylist') }}</p>
                             </div>
                         </div>
                         <div class="text-right">
@@ -356,7 +356,7 @@ const greeting = computed(() => {
             <div class="bg-white dark:bg-slate-900 p-8 rounded-[3rem] border border-slate-200 dark:border-white/5 premium-shadow flex flex-col">
                 <div class="flex items-center justify-between mb-8">
                     <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ __('recent_activity') }}</h3>
-                    <Link :href="route('owner.appointments.list')" class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600">{{ __('view_all') }}</Link>
+                    <Link :href="route('owner.appointments.list')" class="text-[10px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-600">{{ __('view_all') }}</Link>
                 </div>
                 
                 <div class="flex-1 space-y-5">
@@ -373,7 +373,7 @@ const greeting = computed(() => {
                             <div>
                                 <div class="flex items-center gap-2 mb-1">
                                     <span class="text-sm font-black text-slate-900 dark:text-white">{{ appt.customer?.name || __('walk_in') }}</span>
-                                    <span :class="['px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest', appt.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500']">
+                                    <span :class="['px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest', appt.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500']">
                                         {{ __(appt.status) }}
                                     </span>
                                 </div>

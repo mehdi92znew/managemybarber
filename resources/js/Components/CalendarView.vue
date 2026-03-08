@@ -300,9 +300,9 @@ const calendarOptions = computed(() => ({
                 icon: "bg-white/20",
             },
             scheduled: {
-                bg: "bg-indigo-600",
+                bg: "bg-rose-500",
                 text: "text-white",
-                sub: "text-indigo-100/80",
+                sub: "text-rose-100/80",
                 icon: "bg-white/20",
             },
         };
@@ -395,7 +395,7 @@ defineExpose({ refreshCalendar });
                 <template v-if="!isBarberView">
                     <Link
                         :href="route('owner.calendar.daily')"
-                        class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap text-amber-500 hover:bg-amber-500/10 mr-2 border border-amber-500/20"
+                        class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap text-rose-500 hover:bg-rose-500/10 mr-2 border border-rose-500/20"
                     >
                         {{ __("daily_planning") }}
                     </Link>
@@ -408,8 +408,8 @@ defineExpose({ refreshCalendar });
                     class="flex-1 xl:flex-none px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap"
                     :class="
                         currentView === 'timeGridWeek'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                            : 'text-slate-500 hover:text-indigo-600'
+                            ? 'bg-rose-600 text-white shadow-lg shadow-rose-500/20'
+                            : 'text-slate-500 hover:text-rose-600'
                     "
                 >
                     {{ __("week") }}
@@ -419,8 +419,8 @@ defineExpose({ refreshCalendar });
                     class="flex-1 xl:flex-none px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap"
                     :class="
                         currentView === 'timeGridDay'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                            : 'text-slate-500 hover:text-indigo-600'
+                            ? 'bg-rose-600 text-white shadow-lg shadow-rose-500/20'
+                            : 'text-slate-500 hover:text-rose-600'
                     "
                 >
                     {{ __("day") }}
@@ -430,8 +430,8 @@ defineExpose({ refreshCalendar });
                     class="flex-1 xl:flex-none px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap"
                     :class="
                         currentView === 'listWeek'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                            : 'text-slate-500 hover:text-indigo-600'
+                            ? 'bg-rose-600 text-white shadow-lg shadow-rose-500/20'
+                            : 'text-slate-500 hover:text-rose-600'
                     "
                 >
                     {{ __("list") }}
@@ -469,7 +469,7 @@ defineExpose({ refreshCalendar });
                     <div class="flex flex-col items-center">
                         <button
                             @click="goToday"
-                            class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 hover:text-amber-600 transition-colors mt-0.5"
+                            class="text-[8px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-rose-500 hover:text-rose-600 transition-colors mt-0.5"
                         >
                             {{ __("today") }}
                         </button>
@@ -507,7 +507,7 @@ defineExpose({ refreshCalendar });
                 class="w-full xl:w-auto flex-1 xl:max-w-xs flex items-center gap-3 sm:gap-4 p-2 px-3 sm:p-2.5 sm:px-4 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 shadow-sm"
             >
                 <div
-                    class="p-1.5 sm:p-2 rounded-lg bg-indigo-500/10 text-indigo-600 shrink-0"
+                    class="p-1.5 sm:p-2 rounded-lg bg-rose-500/10 text-rose-600 shrink-0"
                 >
                     <svg
                         class="w-3 h-3 sm:w-4 sm:h-4"
@@ -571,7 +571,7 @@ defineExpose({ refreshCalendar });
         >
             <div class="flex flex-col items-center">
                 <div
-                    class="p-6 rounded-3xl bg-amber-50 dark:bg-amber-500/10 text-amber-500 mb-4"
+                    class="p-6 rounded-3xl bg-rose-50 dark:bg-rose-500/10 text-rose-500 mb-4"
                 >
                     <svg
                         class="w-12 h-12"
@@ -597,9 +597,9 @@ defineExpose({ refreshCalendar });
                 </p>
                 <Link
                     :href="route('owner.barbers.index')"
-                    class="mt-6 px-6 py-3 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/20"
+                    class="mt-6 px-6 py-3 rounded-xl bg-rose-600 text-white font-bold text-sm hover:bg-rose-700 transition-colors shadow-lg shadow-rose-500/20"
                 >
-                    {{ __("add_barber") }}
+                    {{ __("add_stylist") }}
                 </Link>
             </div>
         </div>
@@ -653,7 +653,7 @@ defineExpose({ refreshCalendar });
 
 .fc {
     --fc-border-color: rgba(226, 232, 240, 0.5);
-    --fc-today-bg-color: rgba(245, 158, 11, 0.05);
+    --fc-today-bg-color: rgba(244, 63, 94, 0.05);
     --fc-button-bg-color: transparent;
     --fc-button-border-color: rgba(226, 232, 240, 0.8);
     --fc-button-text-color: #64748b;
@@ -661,12 +661,12 @@ defineExpose({ refreshCalendar });
     --fc-button-hover-border-color: #cbd5e1;
     --fc-button-active-bg-color: #e2e8f0;
     --fc-button-active-border-color: #94a3b8;
-    --fc-list-event-hover-bg-color: rgba(245, 158, 11, 0.05);
+    --fc-list-event-hover-bg-color: rgba(244, 63, 94, 0.05);
 }
 
 .dark .fc {
     --fc-border-color: rgba(255, 255, 255, 0.05);
-    --fc-today-bg-color: rgba(245, 158, 11, 0.05);
+    --fc-today-bg-color: rgba(244, 63, 94, 0.05);
     --fc-button-text-color: #94a3b8;
     --fc-button-hover-bg-color: rgba(255, 255, 255, 0.05);
     --fc-button-active-bg-color: rgba(255, 255, 255, 0.1);

@@ -220,7 +220,7 @@ const getStatusColorClass = (status) => {
         case "cancelled":
             return "bg-rose-500";
         default:
-            return "bg-indigo-600";
+            return "bg-rose-600";
     }
 };
 
@@ -268,7 +268,7 @@ const formatSimpleTime = (dateStr) => {
                     </h2>
                     <button
                         @click="goToday"
-                        class="text-[8px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600 block leading-none"
+                        class="text-[8px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-600 block leading-none"
                     >
                         {{ __("today") }}
                     </button>
@@ -301,7 +301,7 @@ const formatSimpleTime = (dateStr) => {
                 >
                     <svg
                         v-if="viewMode === 'vertical'"
-                        class="w-4 h-4 text-amber-500"
+                        class="w-4 h-4 text-rose-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -315,7 +315,7 @@ const formatSimpleTime = (dateStr) => {
                     </svg>
                     <svg
                         v-else
-                        class="w-4 h-4 text-amber-500"
+                        class="w-4 h-4 text-rose-500"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -339,7 +339,7 @@ const formatSimpleTime = (dateStr) => {
                 </button>
 
                 <div class="flex items-center gap-2 mr-4">
-                    <div class="w-3 h-3 rounded-full bg-indigo-600"></div>
+                    <div class="w-3 h-3 rounded-full bg-rose-600"></div>
                     <span>{{ __("scheduled") }}</span>
                 </div>
                 <div class="flex items-center gap-2">
@@ -388,7 +388,7 @@ const formatSimpleTime = (dateStr) => {
                         class="h-10 flex items-center gap-2 px-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-100 dark:border-white/5 sticky top-0 z-10"
                     >
                         <div
-                            class="w-6 h-6 rounded-lg bg-amber-500 text-slate-900 flex items-center justify-center font-black shadow-md shadow-amber-500/20 text-[10px] shrink-0"
+                            class="w-6 h-6 rounded-lg bg-rose-500 text-white flex items-center justify-center font-black shadow-md shadow-rose-500/20 text-[10px] shrink-0"
                         >
                             {{ barber.name.charAt(0) }}
                         </div>
@@ -500,7 +500,7 @@ const formatSimpleTime = (dateStr) => {
                         class="w-32 shrink-0 bg-white/95 dark:bg-slate-900/95 border-r border-slate-100 dark:border-white/5 sticky left-0 z-10 flex items-center px-3 h-14 backdrop-blur-sm shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_24px_-12px_rgba(255,255,255,0.05)]"
                     >
                         <div
-                            class="w-6 h-6 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-[10px] mr-2 shrink-0 shadow-sm"
+                            class="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center font-black text-[10px] mr-2 shrink-0 shadow-sm"
                         >
                             {{ barber.name.charAt(0) }}
                         </div>
