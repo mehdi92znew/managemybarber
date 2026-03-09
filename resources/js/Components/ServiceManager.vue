@@ -28,6 +28,9 @@ const form = reactive({
     price: 0,
     duration_minutes: 30,
     is_extra: false,
+    has_special_commission: false,
+    commission_type: 'percentage',
+    commission_value: null,
 });
 
 const formErrors = ref({});
@@ -39,7 +42,10 @@ const openCreateModal = () => {
         name: '',
         price: 0,
         duration_minutes: 30,
-        is_extra: false
+        is_extra: false,
+        has_special_commission: false,
+        commission_type: 'percentage',
+        commission_value: null,
     });
     formErrors.value = {};
     isModalOpen.value = true;
@@ -52,7 +58,10 @@ const openEditModal = (service) => {
         name: service.name,
         price: service.price,
         duration_minutes: service.duration_minutes,
-        is_extra: Boolean(service.is_extra)
+        is_extra: Boolean(service.is_extra),
+        has_special_commission: Boolean(service.has_special_commission),
+        commission_type: service.commission_type || 'percentage',
+        commission_value: service.commission_value || null,
     });
     formErrors.value = {};
     isModalOpen.value = true;
@@ -150,7 +159,14 @@ onMounted(() => {
                                 </div>
                                 <div>
                                     <p class="text-sm font-bold text-slate-900 dark:text-white">{{ service.name }}</p>
-                                    <span v-if="service.is_extra" class="text-[9px] font-black uppercase tracking-widest text-amber-500">{{ __('extra_service') }}</span>
+                                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                                        <span v-if="service.is_extra" class="text-[9px] font-black uppercase tracking-widest text-amber-500">
+                                            {{ __('extra_service') }}
+                                        </span>
+                                        <span v-if="service.has_special_commission" class="text-[9px] font-bold tracking-widest px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-500 dark:bg-indigo-500/10">
+                                            <span class="uppercase font-black">{{ __('commission') }}:</span> {{ service.commission_type === 'percentage' ? service.commission_value + '%' : formatCurrency(service.commission_value) }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </td>
@@ -187,10 +203,18 @@ onMounted(() => {
                         </div>
                         <div>
                             <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-tight">{{ service.name }}</h3>
-                            <div class="flex items-center gap-2 mt-1">
+                            <div class="flex flex-wrap items-center gap-2 mt-1">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ service.duration_minutes }} {{ __('mins_short') }}</span>
-                                <span v-if="service.is_extra" class="h-1 w-1 rounded-full bg-amber-500"></span>
-                                <span v-if="service.is_extra" class="text-[9px] font-black uppercase tracking-widest text-amber-500">{{ __('extra') }}</span>
+                                <span v-if="service.is_extra" class="flex items-center gap-1.5">
+                                    <span class="h-1 w-1 rounded-full bg-amber-500"></span>
+                                    <span class="text-[9px] font-black uppercase tracking-widest text-amber-500">{{ __('extra') }}</span>
+                                </span>
+                                <span v-if="service.has_special_commission" class="flex items-center gap-1.5">
+                                    <span class="h-1 w-1 rounded-full bg-indigo-500"></span>
+                                    <span class="text-[9px] font-black uppercase tracking-widest text-indigo-500">
+                                        {{ service.commission_type === 'percentage' ? service.commission_value + '%' : formatCurrency(service.commission_value) }}
+                                    </span>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -291,7 +315,7 @@ onMounted(() => {
                                 v-model="form.is_extra"
                                 class="sr-only"
                             />
-                            <div class="w-10 h-6 bg-slate-200 dark:bg-slate-700 rounded-full transition-colors" :class="form.is_extra ? 'bg-amber-500' : ''"></div>
+                            <div class="w-10 h-6 rounded-full transition-colors" :class="form.is_extra ? 'bg-amber-500' : 'bg-slate-200 dark:bg-slate-700'"></div>
                             <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform" :class="form.is_extra ? 'translate-x-4' : ''"></div>
                         </div>
                         <div>
@@ -299,6 +323,45 @@ onMounted(() => {
                              <p class="text-[10px] font-medium text-slate-500 mt-0.5">{{ __('extra_service_desc') }}</p>
                         </div>
                     </label>
+
+                    <label class="flex items-center gap-4 p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 cursor-pointer group transition-all" :class="form.has_special_commission ? 'border-amber-500/30 bg-amber-500/5' : ''">
+                        <div class="relative w-10 h-6">
+                             <input
+                                id="has_special_commission"
+                                type="checkbox"
+                                v-model="form.has_special_commission"
+                                class="sr-only"
+                            />
+                            <div class="w-10 h-6 rounded-full transition-colors" :class="form.has_special_commission ? 'bg-amber-500' : 'bg-slate-200 dark:bg-slate-700'"></div>
+                            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform" :class="form.has_special_commission ? 'translate-x-4' : ''"></div>
+                        </div>
+                        <div>
+                             <p class="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">{{ __('has_special_commission') }}</p>
+                             <p class="text-[10px] font-medium text-slate-500 mt-0.5">{{ __('special_commission_desc') }}</p>
+                        </div>
+                    </label>
+
+                    <div v-if="form.has_special_commission" class="grid grid-cols-2 gap-4 p-5 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('commission_type') }}</p>
+                            <select v-model="form.commission_type" class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm">
+                                <option value="percentage">{{ __('percentage') }}</option>
+                                <option value="fixed">{{ __('fixed') }}</option>
+                            </select>
+                            <InputError :message="formErrors.commission_type" class="mt-2" />
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{{ __('commission_value') }}</p>
+                            <input
+                                id="commission_value"
+                                v-model="form.commission_value"
+                                type="number"
+                                step="0.01"
+                                class="w-full border-none bg-transparent font-bold text-slate-900 dark:text-white focus:ring-0 p-0 text-sm"
+                            />
+                            <InputError :message="formErrors.commission_value" class="mt-2" />
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-10 flex gap-4">

@@ -110,6 +110,11 @@ const navigation = computed(() => {
             icon: "BanknotesIcon",
         });
         links.push({
+            name: trans("cash_drawer", currentLocale.value),
+            route: "owner.cash-drawer.index",
+            icon: "WalletIcon",
+        });
+        links.push({
             name: trans("payouts", currentLocale.value),
             route: "owner.barber-payouts.index",
             icon: "WalletIcon",

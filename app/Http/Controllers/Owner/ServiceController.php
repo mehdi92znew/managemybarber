@@ -22,6 +22,9 @@ class ServiceController extends Controller
             'price' => 'required|numeric|min:0',
             'duration_minutes' => 'required|integer|min:1',
             'is_extra' => 'boolean',
+            'has_special_commission' => 'boolean',
+            'commission_type' => 'required_if:has_special_commission,true|in:percentage,fixed',
+            'commission_value' => 'required_if:has_special_commission,true|numeric|min:0',
         ]);
 
         $service = Service::create([
@@ -30,6 +33,9 @@ class ServiceController extends Controller
             'price' => $request->price,
             'duration_minutes' => $request->duration_minutes,
             'is_extra' => $request->is_extra ?? false,
+            'has_special_commission' => $request->has_special_commission ?? false,
+            'commission_type' => $request->has_special_commission ? $request->commission_type : 'percentage',
+            'commission_value' => $request->has_special_commission ? $request->commission_value : null,
             'is_active' => true,
         ]);
 
@@ -51,6 +57,9 @@ class ServiceController extends Controller
             'price' => 'required|numeric|min:0',
             'duration_minutes' => 'required|integer|min:1',
             'is_extra' => 'boolean',
+            'has_special_commission' => 'boolean',
+            'commission_type' => 'required_if:has_special_commission,true|in:percentage,fixed',
+            'commission_value' => 'required_if:has_special_commission,true|numeric|min:0',
         ]);
 
         $service->update([
@@ -58,6 +67,9 @@ class ServiceController extends Controller
             'price' => $request->price,
             'duration_minutes' => $request->duration_minutes,
             'is_extra' => $request->is_extra ?? false,
+            'has_special_commission' => $request->has_special_commission ?? false,
+            'commission_type' => $request->has_special_commission ? $request->commission_type : 'percentage',
+            'commission_value' => $request->has_special_commission ? $request->commission_value : null,
         ]);
 
         if ($request->wantsJson()) {

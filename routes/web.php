@@ -69,6 +69,7 @@ Route::middleware(['auth', 'role:owner', 'shop.active'])
     Route::resource('barber-payouts', \App\Http\Controllers\Owner\BarberPayoutController::class);
     Route::get('/barber-report', [\App\Http\Controllers\Owner\BarberReportController::class, 'index'])->name('barber-report');
     Route::resource('notes', \App\Http\Controllers\Owner\NoteController::class);
+    Route::resource('cash-drawer', \App\Http\Controllers\Owner\CashDrawerController::class)->only(['index', 'store', 'update']);
     
     // Calendar & Appointments
     Route::get('/calendar', [\App\Http\Controllers\Owner\AppointmentController::class, 'index'])->name('calendar');

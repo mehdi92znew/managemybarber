@@ -17,6 +17,9 @@ class Service extends Model
         'price',
         'duration_minutes',
         'is_extra',
+        'has_special_commission',
+        'commission_type',
+        'commission_value',
         'is_active',
     ];
 
@@ -24,6 +27,8 @@ class Service extends Model
         'price' => 'decimal:2',
         'is_extra' => 'boolean',
         'is_active' => 'boolean',
+        'has_special_commission' => 'boolean',
+        'commission_value' => 'decimal:2',
     ];
 
     protected static function booted(): void

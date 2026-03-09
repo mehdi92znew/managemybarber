@@ -25,10 +25,13 @@ class BarberReportController extends Controller
         $reportData = null;
 
         if ($barberId && $startDate && $endDate) {
-            $appointments = Appointment::with('customer:id,name', 'services:id,name')
+            $barber = User::find($barberId);
+
+            $appointments = Appointment::with(['customer:id,name', 'services:id,name,price'])
                 ->where('barber_id', $barberId)
                 ->where('status', 'completed')
                 ->whereBetween('start_time', [$startDate, $endDate])
+                ->latest('start_time')
                 ->get();
 
             $payouts = BarberPayout::where('barber_id', $barberId)
@@ -39,10 +42,13 @@ class BarberReportController extends Controller
             $totalServices = $appointments->sum('total_price');
             $totalCommission = $appointments->sum('commission_amount');
             $totalPayouts = $payouts->sum('amount');
+            $totalAppointments = $appointments->count();
             
             $reportData = [
+                'barber_name' => $barber?->name ?? 'N/A',
                 'appointments' => $appointments,
                 'payouts' => $payouts,
+                'total_appointments' => $totalAppointments,
                 'totals' => [
                     'services' => $totalServices,
                     'commission' => $totalCommission,
