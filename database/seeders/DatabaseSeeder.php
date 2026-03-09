@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             SuperAdminSeeder::class,
             AlgerianBarberShopSeeder::class,
+            FrenchShopSeeder::class,
+            AlgerianMarketShopSeeder::class,
         ]);
     }
 }
